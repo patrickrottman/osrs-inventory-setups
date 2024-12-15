@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError, shareReplay, tap } from 'rxjs/operators';
 import { OSRSItem, WikiItemMapping, WikiMappingResponse } from '../models/osrs-api.model';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,10 @@ export class OsrsApiService {
   private imageCache = new Map<number, string>();
   private loadingImages = new Set<number>();
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private storageService: StorageService
+  ) {
     this.loadCacheFromStorage();
     this.fetchItemMapping().subscribe();
   }
@@ -30,31 +34,21 @@ export class OsrsApiService {
   }
 
   private loadCacheFromStorage(): void {
-    const stored = localStorage.getItem(this.STORAGE_KEY);
-    if (stored) {
-      try {
-        const { data, timestamp } = JSON.parse(stored) as { data: WikiItemMapping, timestamp: number };
-        if (Date.now() - timestamp < this.CACHE_DURATION) {
-          this.mappingCache = data;
-          Object.values(data).forEach((item: OSRSItem) => {
-            this.itemCache.set(item.id, item);
-          });
-        }
-      } catch (e) {
-        console.warn('Failed to load cached item data:', e);
+    this.storageService.getItem<{ data: WikiItemMapping, timestamp: number }>('items', this.STORAGE_KEY).subscribe(stored => {
+      if (stored && Date.now() - stored.timestamp < this.CACHE_DURATION) {
+        this.mappingCache = stored.data;
+        Object.values(stored.data).forEach((item: OSRSItem) => {
+          this.itemCache.set(item.id, item);
+        });
       }
-    }
+    });
   }
 
   private saveCache(data: WikiItemMapping): void {
-    try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify({
-        data,
-        timestamp: Date.now()
-      }));
-    } catch (e) {
-      console.warn('Failed to cache item data:', e);
-    }
+    this.storageService.setItem('items', this.STORAGE_KEY, {
+      data,
+      timestamp: Date.now()
+    }).subscribe();
   }
 
   private fetchItemMapping(): Observable<WikiItemMapping> {
@@ -145,26 +139,37 @@ export class OsrsApiService {
     const url = `${this.WIKI_CDN}/${formattedName}.png`;
 
     const img = new Image();
+    img.crossOrigin = 'anonymous';
     img.onload = () => {
       this.imageCache.set(id, url);
       this.loadingImages.delete(id);
     };
     img.onerror = () => {
-      this.failedImages.add(id);
-      this.loadingImages.delete(id);
+      const fallbackImg = new Image();
+      fallbackImg.onload = () => {
+        this.imageCache.set(id, url);
+        this.loadingImages.delete(id);
+      };
+      fallbackImg.onerror = () => {
+        this.failedImages.add(id);
+        this.loadingImages.delete(id);
+      };
+      fallbackImg.src = url;
     };
     img.src = url;
   }
 
   private formatItemName(name: string): string {
-    return name
-      .replace(/ /g, '_')
-      .replace(/'/g, '%27')
-      .replace(/\((\d+)\)/, '($1)');
+    return encodeURIComponent(
+      name
+        .replace(/ /g, '_')
+        .replace(/'/g, '%27')
+        .replace(/\((\d+)\)/, '($1)')
+    );
   }
 
   private getPlaceholderImage(): string {
-    return `${this.WIKI_CDN}/Transparent.png`;
+    return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
   }
 
   getCachedItem(id: number): OSRSItem | null {

@@ -1,5 +1,5 @@
 @mixin runescape-text {
-  color: #FF981F;
+  color: var(--inventory-text-color);
   font-family: "RuneScape UF", "RuneScape", Arial, sans-serif;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
 }
@@ -8,8 +8,8 @@
   position: relative;
   width: 42px;
   height: 42px;
-  background-color: #383838;
-  border: 1px solid rgba(0, 0, 0, 0.5);
+  background-color: var(--inventory-slot-color);
+  border: 1px solid var(--inventory-border-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,7 +18,7 @@
   cursor: help;
 
   &:hover {
-    background-color: #404040;
+    background-color: var(--inventory-slot-hover-color);
 
     .item-tooltip {
       display: block;
@@ -54,8 +54,8 @@
   bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.9);
-  color: #FF981F;
+  background-color: var(--inventory-tooltip-bg);
+  color: var(--inventory-text-color);
   padding: 6px 12px;
   border-radius: 4px;
   font-size: 12px;
@@ -63,7 +63,7 @@
   pointer-events: none;
   z-index: 1000;
   margin-bottom: 4px;
-  border: 1px solid #382F24;
+  border: 1px solid var(--inventory-border-color);
   font-family: "RuneScape UF", "RuneScape", Arial, sans-serif;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
 
@@ -74,7 +74,7 @@
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: rgba(0, 0, 0, 0.9);
+    border-top-color: var(--inventory-tooltip-bg);
   }
 
   &::before {
@@ -84,7 +84,7 @@
     left: 50%;
     transform: translateX(-50%);
     border: 7px solid transparent;
-    border-top-color: #382F24;
+    border-top-color: var(--inventory-border-color);
     margin-top: 1px;
     z-index: -1;
   }

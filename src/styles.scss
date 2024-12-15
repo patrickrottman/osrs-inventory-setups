@@ -40,6 +40,14 @@ $my-light-theme: mat.m2-define-light-theme((
   --mat-primary-color: #{mat.get-theme-color($my-dark-theme, primary)};
   --mat-primary-contrast-color: #{mat.get-theme-color($my-dark-theme, primary, default-contrast)};
   --mat-card-elevated-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+  // Inventory theme variables - dark mode
+  --inventory-background-color: #211D19;
+  --inventory-border-color: #382F24;
+  --inventory-slot-color: #383838;
+  --inventory-slot-hover-color: #404040;
+  --inventory-text-color: #FF981F;
+  --inventory-tooltip-bg: rgba(0, 0, 0, 0.9);
 }
 
 // Light theme class
@@ -57,6 +65,14 @@ $my-light-theme: mat.m2-define-light-theme((
     --mat-primary-color: #{mat.get-theme-color($my-light-theme, primary)};
     --mat-primary-contrast-color: #{mat.get-theme-color($my-light-theme, primary, default-contrast)};
     --mat-card-elevated-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    // Inventory theme variables - light mode
+    --inventory-background-color: #E9E2D9;
+    --inventory-border-color: #B8A88F;
+    --inventory-slot-color: #D4C8B6;
+    --inventory-slot-hover-color: #C4B5A0;
+    --inventory-text-color: #8B4513;
+    --inventory-tooltip-bg: rgba(255, 255, 255, 0.95);
   }
 }
 
