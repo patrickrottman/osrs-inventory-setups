@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { initializeApp } from 'firebase/app';
 import { 
   Auth, 
@@ -42,6 +42,7 @@ import { Analytics, getAnalytics } from 'firebase/analytics';
 import { environment } from '../../../environments/environment';
 import { LoadoutData, Category } from '../../shared/models/inventory.model';
 import { LoadoutStateService } from './loadout-state.service';
+import { StorageService } from './storage.service';
 
 export interface LoadoutQueryOptions {
   categories?: Category['type'][];
@@ -106,7 +107,8 @@ export class FirebaseService {
   private readonly STATS_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
   
   constructor(
-    private loadoutStateService: LoadoutStateService
+    private loadoutStateService: LoadoutStateService,
+    private storageService: StorageService
   ) {
     this.loadCachedStats();
     onAuthStateChanged(this.auth, (user: User | null) => {
@@ -119,45 +121,46 @@ export class FirebaseService {
 
     // Refresh stats periodically if cached
     setInterval(() => {
-      const cached = this.loadStatsFromCache();
-      if (cached) {
-        this.refreshStats();
-      }
+      this.loadStatsFromCache().subscribe(cached => {
+        if (cached) {
+          this.refreshStats();
+        }
+      });
     }, this.STATS_CACHE_DURATION);
   }
 
   private loadCachedStats(): void {
-    const cached = this.loadStatsFromCache();
-    if (cached) {
-      this.stats.next(cached.data);
-    }
+    this.loadStatsFromCache().subscribe(cached => {
+      if (cached) {
+        this.stats.next(cached.data);
+      }
+    });
   }
 
-  private loadStatsFromCache(): CachedStats | null {
-    try {
-      const cached = localStorage.getItem(this.STATS_CACHE_KEY);
-      if (cached) {
-        const parsedCache = JSON.parse(cached) as CachedStats;
-        if (Date.now() - parsedCache.timestamp < this.STATS_CACHE_DURATION) {
-          return parsedCache;
+  private loadStatsFromCache(): Observable<CachedStats | null> {
+    return this.storageService.getItem<CachedStats>('stats', this.STATS_CACHE_KEY).pipe(
+      map(cached => {
+        if (cached && Date.now() - cached.timestamp < this.STATS_CACHE_DURATION) {
+          return cached;
         }
-      }
-    } catch (error) {
-      console.warn('Error loading stats from cache:', error);
-    }
-    return null;
+        return null;
+      }),
+      catchError(error => {
+        console.warn('Error loading stats from cache:', error);
+        return of(null);
+      })
+    );
   }
 
   private saveStatsToCache(stats: CachedStats['data']): void {
-    try {
-      const cache: CachedStats = {
-        data: stats,
-        timestamp: Date.now()
-      };
-      localStorage.setItem(this.STATS_CACHE_KEY, JSON.stringify(cache));
-    } catch (error) {
-      console.warn('Error saving stats to cache:', error);
-    }
+    const cache: CachedStats = {
+      data: stats,
+      timestamp: Date.now()
+    };
+    this.storageService.setItem('stats', this.STATS_CACHE_KEY, cache).subscribe(
+      () => {},
+      error => console.warn('Error saving stats to cache:', error)
+    );
   }
 
   private async refreshStats(): Promise<void> {
@@ -206,10 +209,11 @@ export class FirebaseService {
       console.error('Error refreshing stats:', error);
       
       // If error, try to use cached stats
-      const cached = this.loadStatsFromCache();
-      if (cached) {
-        this.stats.next(cached.data);
-      }
+      this.loadStatsFromCache().subscribe(cached => {
+        if (cached) {
+          this.stats.next(cached.data);
+        }
+      });
     }
   }
 

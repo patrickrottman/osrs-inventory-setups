@@ -4,10 +4,10 @@ $base-item-size: clamp(28px, 3.2vw, 32px);
 
 // Common mixins
 @mixin container-base {
-  background-color: #211D19;
+  background-color: var(--inventory-background-color, #211D19);
   padding: 16px;
   width: fit-content;
-  border: 2px solid #382F24;
+  border: 2px solid var(--inventory-border-color, #382F24);
   box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
@@ -15,7 +15,7 @@ $base-item-size: clamp(28px, 3.2vw, 32px);
 }
 
 @mixin runescape-text {
-  color: #FF981F;
+  color: var(--inventory-text-color, #FF981F);
   font-family: "RuneScape UF", "RuneScape", Arial, sans-serif;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
 }
@@ -24,7 +24,7 @@ $base-item-size: clamp(28px, 3.2vw, 32px);
   position: relative;
   width: 42px;
   height: 42px;
-  background-color: #383838;
+  background-color: var(--inventory-slot-color, #383838);
   border: 1px solid rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -34,7 +34,7 @@ $base-item-size: clamp(28px, 3.2vw, 32px);
   cursor: help;
 
   &:hover {
-    background-color: #404040;
+    background-color: var(--inventory-slot-hover-color, #404040);
 
     .item-tooltip {
       display: block;
@@ -81,7 +81,7 @@ $base-item-size: clamp(28px, 3.2vw, 32px);
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: var(--inventory-tooltip-bg, rgba(0, 0, 0, 0.9));
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
@@ -89,7 +89,7 @@ $base-item-size: clamp(28px, 3.2vw, 32px);
   z-index: 1000;
   pointer-events: none;
   margin-bottom: 4px;
-  border: 1px solid #382F24;
+  border: 1px solid var(--inventory-border-color, #382F24);
   @include runescape-text;
 }
 
@@ -117,7 +117,7 @@ $base-item-size: clamp(28px, 3.2vw, 32px);
   @include slot-gradient;
 
   &.has-item {
-    background-color: #383838;
+    background-color: var(--inventory-slot-color, #383838);
   }
 
   // Position slots
