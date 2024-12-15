@@ -48,5 +48,4 @@ Thumbs.db
 .eslintrc.js
 
 # TypeScript config
-tsconfig.app.json
 tsconfig.spec.json
