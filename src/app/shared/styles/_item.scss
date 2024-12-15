@@ -1,0 +1,91 @@
+@mixin runescape-text {
+  color: #FF981F;
+  font-family: "RuneScape UF", "RuneScape", Arial, sans-serif;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+}
+
+@mixin item-slot {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  background-color: #383838;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  transition: background-color 0.2s ease;
+  cursor: help;
+
+  &:hover {
+    background-color: #404040;
+
+    .item-tooltip {
+      display: block;
+    }
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(0, 0, 0, 0.1) 100%
+    );
+    pointer-events: none;
+  }
+}
+
+@mixin item-base {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+}
+
+@mixin item-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.9);
+  color: #FF981F;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1000;
+  margin-bottom: 4px;
+  border: 1px solid #382F24;
+  font-family: "RuneScape UF", "RuneScape", Arial, sans-serif;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 7px solid transparent;
+    border-top-color: #382F24;
+    margin-top: 1px;
+    z-index: -1;
+  }
+} 

@@ -1,0 +1,159 @@
+<div class="dialog-container" [class.has-preview]="loadoutPreview">
+  <div class="header">
+    <h2 mat-dialog-title>
+      <mat-icon>upload_file</mat-icon>
+      Upload Loadout
+    </h2>
+    <button mat-icon-button mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="content-wrapper" [class.has-preview]="loadoutPreview">
+    <div class="input-section">
+      <mat-dialog-content>
+        <form [formGroup]="jsonForm">
+          <mat-form-field appearance="outline" class="json-field" [class.expanded]="isExpanded">
+            <mat-label>Paste Loadout JSON</mat-label>
+            <textarea
+              matInput
+              formControlName="json"
+              rows="8"
+              (paste)="onPaste($event)"
+              placeholder="Paste your loadout JSON here...">
+            </textarea>
+            <div class="field-actions">
+              <button 
+                mat-icon-button 
+                type="button"
+                *ngIf="loadoutPreview"
+                (click)="isExpanded = !isExpanded"
+                [matTooltip]="isExpanded ? 'Collapse' : 'Expand'"
+                class="expand-button">
+                <mat-icon>{{ isExpanded ? 'unfold_less' : 'unfold_more' }}</mat-icon>
+              </button>
+              <button 
+                mat-icon-button 
+                type="button"
+                (click)="pasteFromClipboard()"
+                matTooltip="Paste from clipboard">
+                <mat-icon>content_paste</mat-icon>
+              </button>
+            </div>
+          </mat-form-field>
+
+          <div class="additional-fields" [class.visible]="loadoutPreview">
+            <mat-form-field appearance="outline">
+              <mat-label>Category</mat-label>
+              <mat-select formControlName="category">
+                <mat-option *ngFor="let cat of categories" [value]="cat.value">
+                  <mat-icon>{{ cat.value === 'Boss' ? 'security' : cat.value === 'Skill' ? 'trending_up' : 'category' }}</mat-icon>
+                  {{ cat.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Tags</mat-label>
+              <mat-select formControlName="tags" multiple>
+                <mat-option *ngFor="let tag of availableTags" [value]="tag">
+                  <mat-icon>{{ 
+                    tag === 'Bossing' ? 'security' :
+                    tag === 'Slayer' ? 'local_fire_department' :
+                    tag === 'Raids' ? 'groups' :
+                    tag === 'Wilderness' ? 'warning' :
+                    tag === 'Skilling' ? 'build' :
+                    tag === 'Money-maker' ? 'attach_money' :
+                    tag === 'Beginner' ? 'school' :
+                    tag === 'Leagues' ? 'emoji_events' :
+                    'stars'
+                  }}</mat-icon>
+                  {{ tag }}
+                </mat-option>
+              </mat-select>
+              <mat-hint>Select multiple tags to help others find your loadout</mat-hint>
+            </mat-form-field>
+          </div>
+        </form>
+      </mat-dialog-content>
+    </div>
+
+    <div class="preview-section" *ngIf="loadoutPreview">
+      <div class="preview-header">
+        <h3>
+          <mat-icon>preview</mat-icon>
+          {{ loadoutPreview.setup.name }}
+        </h3>
+        <div class="preview-meta" *ngIf="jsonForm.get('tags')?.value?.length || jsonForm.get('category')?.value !== 'Custom'">
+          <mat-chip-set>
+            <mat-chip color="primary" highlighted>{{ loadoutPreview.category }}</mat-chip>
+            <mat-chip *ngFor="let tag of jsonForm.get('tags')?.value || []">{{ tag }}</mat-chip>
+          </mat-chip-set>
+        </div>
+      </div>
+      
+      <div class="preview-content">
+        <div class="preview-grid">
+          <!-- Equipment Section -->
+          <div class="section">
+            <div class="section-title">
+              <mat-icon>accessibility</mat-icon>
+              Equipment
+            </div>
+            <app-equipment-slots
+              [equipment]="loadoutPreview.setup.eq"
+              [spellbookId]="loadoutPreview.setup.sb ?? 0">
+            </app-equipment-slots>
+          </div>
+
+          <!-- Inventory Section -->
+          <div class="section">
+            <div class="section-title">
+              <mat-icon>grid_view</mat-icon>
+              Inventory
+            </div>
+            <app-inventory-grid
+              [items]="loadoutPreview.setup.inv"
+              [layout]="loadoutPreview.layout ?? []">
+            </app-inventory-grid>
+          </div>
+        </div>
+
+        <!-- Additional Items Section -->
+        <div class="section" *ngIf="hasAfiItems()">
+          <div class="section-title">
+            <mat-icon>filter_list</mat-icon>
+            Additional Items
+          </div>
+          <div class="filtered-items">
+            <div class="item" *ngFor="let item of getAfiItems()">
+              <img [src]="getItemImageUrl(item.value.id)" [alt]="'Item ' + item.value.id">
+              <div class="item-tooltip">{{ getItemName(item.value.id) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes Section -->
+        <div class="section notes-section" *ngIf="loadoutPreview.setup.notes">
+          <div class="section-title">
+            <mat-icon>notes</mat-icon>
+            Notes
+          </div>
+          <div class="notes-content">{{ loadoutPreview.setup.notes }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      [disabled]="!loadoutPreview"
+      (click)="onSubmit()">
+      <mat-icon>save</mat-icon>
+      Save Loadout
+    </button>
+  </mat-dialog-actions>
+</div> 

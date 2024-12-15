@@ -1,0 +1,39 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Loadouts collection
+    match /loadouts/{loadoutId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && request.auth.uid == resource.data.userId;
+    }
+
+    // Users collection and subcollections
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if isSignedIn() && request.auth.uid == userId;
+
+      // Allow access to likes subcollection
+      match /likes/{likeId} {
+        allow read: if true;
+        allow write: if isSignedIn() && request.auth.uid == userId;
+      }
+    }
+
+    // Stats collection
+    match /stats/global {
+      allow read, write: if isSignedIn();
+    }
+
+    // Allow collection group query for likes
+    match /{path=**}/likes/{likeId} {
+      allow read: if true;
+      allow delete: if isSignedIn();
+    }
+  }
+} 

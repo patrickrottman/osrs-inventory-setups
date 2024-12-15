@@ -1,0 +1,50 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  min-height: calc(100vh - 80px);
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .content {
+    padding: 16px;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+
+  button {
+    gap: 8px;
+  }
+}
+
+mat-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+app-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: block;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+}

@@ -1,0 +1,154 @@
+<div class="home-container">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="controls-container">
+      <div class="left-controls">
+        <mat-form-field appearance="outline" class="search-field">
+          <input matInput [formControl]="searchControl" placeholder="Search loadouts">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- Combined Filter Button -->
+        <mat-form-field appearance="outline" class="filter-select">
+          <mat-select [matMenuTriggerFor]="filterMenu" placeholder="Filter">
+            <mat-select-trigger>
+              <mat-icon>filter_list</mat-icon>
+              Filter
+              <span class="filter-count" *ngIf="(selectedCategories.value?.length ?? 0) + (selectedTags.value?.length ?? 0) > 0">
+                ({{ (selectedCategories.value?.length ?? 0) + (selectedTags.value?.length ?? 0) }})
+              </span>
+            </mat-select-trigger>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Filter Menu -->
+        <mat-menu #filterMenu="matMenu" class="filter-menu">
+          <div class="filter-menu-content" 
+               (click)="$event.stopPropagation()"
+               (keydown)="handleFilterKeydown($event)"
+               tabindex="0"
+               role="menu">
+            <!-- Categories Section -->
+            <div class="filter-section">
+              <h3>Categories</h3>
+              <mat-selection-list [formControl]="selectedCategories" class="filter-list">
+                <mat-list-option *ngFor="let cat of categories" [value]="cat.value">
+                  {{ cat.label }}
+                </mat-list-option>
+              </mat-selection-list>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Tags Section -->
+            <div class="filter-section" *ngIf="availableTags$ | async as tags">
+              <h3>Tags</h3>
+              <mat-selection-list [formControl]="selectedTags" class="filter-list">
+                <mat-list-option *ngFor="let tag of tags" [value]="tag">
+                  {{ tag }}
+                </mat-list-option>
+              </mat-selection-list>
+            </div>
+
+            <!-- Clear Filters -->
+            <div class="filter-actions">
+              <button mat-stroked-button
+                      (click)="clearFilters(); $event.stopPropagation()"
+                      [disabled]="!hasActiveFilters()">
+                Clear All Filters
+              </button>
+            </div>
+          </div>
+        </mat-menu>
+
+        <div class="sort-group">
+          <mat-form-field appearance="outline" class="sort-select">
+            <mat-select [formControl]="sortControl" placeholder="Sort">
+              <mat-option *ngFor="let option of sortOptions" [value]="option.key">
+                <mat-icon>{{ option.icon }}</mat-icon>
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <button mat-icon-button
+                  (click)="toggleSortDirection()"
+                  [matTooltip]="sortDirectionControl.value === 'asc' ? 'Sort Ascending' : 'Sort Descending'"
+                  class="sort-direction">
+            <mat-icon>{{ getSortIcon() }}</mat-icon>
+          </button>
+        </div>
+
+        <button *ngIf="hasActiveFilters()" 
+                mat-stroked-button 
+                (click)="clearFilters()" 
+                class="clear-filters">
+          Clear
+        </button>
+      </div>
+
+      <button mat-flat-button 
+              color="primary" 
+              (click)="openCreateDialog()" 
+              [disabled]="(isLoggedIn$ | async) === false" 
+              class="create-button">
+        <mat-icon>add</mat-icon>
+        Create
+      </button>
+    </div>
+  </div>
+
+  <!-- Loadouts Grid -->
+  <div class="loadouts-grid">
+    <mat-card *ngFor="let loadout of loadouts$ | async" class="loadout-card" (click)="openLoadout(loadout)">
+      <mat-card-header>
+        <div class="header-content">
+          <div class="title">
+            <h3>{{ loadout.setup.name }}</h3>
+            <mat-chip-set *ngIf="loadout.category !== 'Custom'">
+              <mat-chip color="primary" highlighted>{{ loadout.category }}</mat-chip>
+            </mat-chip-set>
+          </div>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="preview-grid">
+          <app-equipment-slots
+            [equipment]="loadout.setup.eq"
+            [spellbookId]="loadout.setup.sb ?? 0"
+            [compact]="true">
+          </app-equipment-slots>
+        </div>
+      </mat-card-content>
+
+      <mat-card-footer>
+        <div class="stats">
+          <span class="date">{{ loadout.createdAt | firebaseDate }}</span>
+          <div class="metrics">
+            <span class="views" *ngIf="loadout.views">
+              <mat-icon>visibility</mat-icon>
+              {{ loadout.views }}
+            </span>
+            <span class="likes" *ngIf="loadout.likes">
+              <mat-icon>favorite</mat-icon>
+              {{ loadout.likes }}
+            </span>
+          </div>
+        </div>
+      </mat-card-footer>
+    </mat-card>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="(paginationState$ | async)?.loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- No Results -->
+  <div class="no-results" *ngIf="(loadouts$ | async)?.length === 0 && !(paginationState$ | async)?.loading">
+    <mat-icon>search_off</mat-icon>
+    <p>No loadouts found</p>
+    <button mat-stroked-button color="primary" (click)="clearFilters()">Clear Filters</button>
+  </div>
+</div> 

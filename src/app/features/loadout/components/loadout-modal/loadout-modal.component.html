@@ -1,0 +1,112 @@
+<div class="dialog-container">
+  <div class="header">
+    <h2 mat-dialog-title>
+      <mat-icon>inventory_2</mat-icon>
+      {{ data.setup.name }}
+    </h2>
+    <div class="header-actions">
+      <button mat-icon-button 
+              [color]="hasLiked ? 'warn' : ''" 
+              (click)="toggleLike()"
+              [matTooltip]="(isLoggedIn$ | async) ? (hasLiked ? 'Unlike' : 'Like') : 'Sign in to like'"
+              [disabled]="(isLoggedIn$ | async) === false">
+        <mat-icon>{{ hasLiked ? 'favorite' : 'favorite_border' }}</mat-icon>
+      </button>
+      <button mat-icon-button (click)="copyLoadout()" matTooltip="Copy Loadout">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+      <button *ngIf="isOwner"
+              mat-icon-button
+              matTooltip="Delete Loadout"
+              color="warn"
+              (click)="deleteLoadout()">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <button mat-icon-button mat-dialog-close matTooltip="Close">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="preview-section">
+      <div class="preview-header">
+        <div class="preview-meta" *ngIf="data.tags?.length || data.category !== 'Custom'">
+          <mat-chip-set>
+            <mat-chip color="primary" highlighted>{{ data.category }}</mat-chip>
+            <mat-chip *ngFor="let tag of data.tags">{{ tag }}</mat-chip>
+          </mat-chip-set>
+        </div>
+      </div>
+      
+      <div class="preview-content">
+        <div class="preview-grid">
+          <!-- Equipment Section -->
+          <div class="section">
+            <div class="section-title">
+              <mat-icon>accessibility</mat-icon>
+              Equipment
+            </div>
+            <app-equipment-slots
+              [equipment]="data.setup.eq"
+              [spellbookId]="data.setup.sb ?? 0">
+            </app-equipment-slots>
+          </div>
+
+          <!-- Inventory Section -->
+          <div class="section">
+            <div class="section-title">
+              <mat-icon>grid_view</mat-icon>
+              Inventory
+            </div>
+            <app-inventory-grid
+              [items]="data.setup.inv"
+              [layout]="data.layout ?? []">
+            </app-inventory-grid>
+          </div>
+        </div>
+
+        <!-- Additional Items Section -->
+        <div class="section" *ngIf="getFilteredItems()?.length">
+          <div class="section-title">
+            <mat-icon>filter_list</mat-icon>
+            Additional Items
+          </div>
+          <div class="filtered-items">
+            <div class="item" *ngFor="let item of getFilteredItems()">
+              <img [src]="getItemImageUrl(item.id)" [alt]="getItemName(item.id)">
+              <div class="item-tooltip">{{ getItemName(item.id) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes Section -->
+        <div class="section notes-section" *ngIf="data.setup.notes">
+          <div class="section-title">
+            <mat-icon>notes</mat-icon>
+            Notes
+          </div>
+          <div class="notes-content">{{ data.setup.notes }}</div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="section stats-section">
+          <div class="stats">
+            <span class="stat">
+              <mat-icon>schedule</mat-icon>
+              {{ data.createdAt | firebaseDate }}
+            </span>
+            <span class="stat">
+              <mat-icon>favorite</mat-icon>
+              {{ data.likes || 0 }} {{ (data.likes === 1) ? 'like' : 'likes' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+  </mat-dialog-actions>
+</div> 

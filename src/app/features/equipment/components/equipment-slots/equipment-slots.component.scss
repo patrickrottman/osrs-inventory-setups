@@ -1,0 +1,152 @@
+// Variables for responsive sizing
+$base-slot-size: clamp(32px, 3.6vw, 36px);
+$base-item-size: clamp(28px, 3.2vw, 32px);
+
+// Common mixins
+@mixin container-base {
+  background-color: #211D19;
+  padding: 16px;
+  width: fit-content;
+  border: 2px solid #382F24;
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+@mixin runescape-text {
+  color: #FF981F;
+  font-family: "RuneScape UF", "RuneScape", Arial, sans-serif;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+}
+
+@mixin slot-base {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  background-color: #383838;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  transition: background-color 0.2s ease;
+  cursor: help;
+
+  &:hover {
+    background-color: #404040;
+
+    .item-tooltip {
+      display: block;
+    }
+  }
+}
+
+@mixin slot-gradient {
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(0, 0, 0, 0.1) 100%
+    );
+    pointer-events: none;
+  }
+}
+
+@mixin item-base {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+  }
+}
+
+@mixin tooltip {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+  margin-bottom: 4px;
+  border: 1px solid #382F24;
+  @include runescape-text;
+}
+
+// Actual styles
+.equipment-container, .spellbook-container {
+  @include container-base;
+  min-width: min-content;
+}
+
+.equipment-container {
+  flex-direction: column;
+  gap: 2px;
+}
+
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 42px);
+  grid-template-rows: 42px 2px 42px 2px 42px 2px 42px 2px 42px;
+  gap: 0;
+  justify-items: center;
+}
+
+.equipment-slot {
+  @include slot-base;
+  @include slot-gradient;
+
+  &.has-item {
+    background-color: #383838;
+  }
+
+  // Position slots
+  &.head { grid-column: 2; grid-row: 1; }
+  &.cape { grid-column: 1; grid-row: 3; }
+  &.amulet { grid-column: 2; grid-row: 3; }
+  &.ammo { grid-column: 3; grid-row: 3; }
+  &.weapon { grid-column: 1; grid-row: 5; }
+  &.body { grid-column: 2; grid-row: 5; }
+  &.shield { grid-column: 3; grid-row: 5; }
+  &.legs { grid-column: 2; grid-row: 7; }
+  &.gloves { grid-column: 1; grid-row: 9; }
+  &.boots { grid-column: 2; grid-row: 9; }
+  &.ring { grid-column: 3; grid-row: 9; }
+}
+
+.section-title {
+  @include runescape-text;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.item {
+  @include item-base;
+
+  .item-tooltip {
+    @include tooltip;
+  }
+} 

@@ -1,0 +1,89 @@
+<div class="loadout-list">
+  <div class="header">
+    <h2>Loadouts</h2>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="openCreateDialog()" 
+      *ngIf="(isLoggedIn$ | async) === true">
+      <mat-icon>add</mat-icon>
+      Create Loadout
+    </button>
+  </div>
+
+  <div class="filters">
+    <mat-form-field appearance="outline">
+      <mat-label>Search loadouts</mat-label>
+      <input matInput [formControl]="searchControl" placeholder="Search by name or notes">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Category</mat-label>
+      <mat-select [formControl]="categoryControl">
+        <mat-option value="">All Categories</mat-option>
+        <mat-option *ngFor="let cat of categories" [value]="cat.type">
+          {{ cat.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="loadouts-grid">
+    <mat-card *ngFor="let loadout of loadouts$ | async" class="loadout-card" (click)="openLoadout(loadout)">
+      <mat-card-header>
+        <mat-card-title>{{ loadout.setup.name }}</mat-card-title>
+        <mat-card-subtitle>
+          <mat-chip-set>
+            <mat-chip>{{ loadout.category }}</mat-chip>
+            <mat-chip *ngFor="let tag of loadout.tags">{{ tag }}</mat-chip>
+          </mat-chip-set>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="loadout-preview">
+          <app-inventory-grid
+            [items]="loadout.setup.inv"
+            [layout]="loadout.layout || []">
+          </app-inventory-grid>
+        </div>
+        <p *ngIf="loadout.setup.notes" class="notes">{{ loadout.setup.notes }}</p>
+      </mat-card-content>
+
+      <mat-card-footer>
+        <div class="stats">
+          <span class="date">{{ loadout.createdAt | firebaseDate }}</span>
+          <div class="metrics">
+            <span class="views" *ngIf="loadout.views">
+              <mat-icon>visibility</mat-icon>
+              {{ loadout.views }}
+            </span>
+            <span class="likes">
+              <mat-icon>favorite</mat-icon>
+              {{ loadout.likes || 0 }}
+            </span>
+          </div>
+        </div>
+      </mat-card-footer>
+
+      <div class="card-actions">
+        <button mat-icon-button 
+                [color]="(hasUserLiked(loadout.id) | async) ? 'warn' : ''" 
+                (click)="toggleLike($event, loadout)"
+                [matTooltip]="(isLoggedIn$ | async) ? ((hasUserLiked(loadout.id) | async) ? 'Unlike' : 'Like') : 'Sign in to like'"
+                [disabled]="(isLoggedIn$ | async) === false">
+          <mat-icon>{{ (hasUserLiked(loadout.id) | async) ? 'favorite' : 'favorite_border' }}</mat-icon>
+        </button>
+
+        <button *ngIf="isOwner(loadout)" 
+                mat-icon-button 
+                class="delete-button"
+                (click)="deleteLoadout($event, loadout)"
+                matTooltip="Delete loadout">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </mat-card>
+  </div>
+</div> 

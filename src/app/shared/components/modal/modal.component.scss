@@ -1,0 +1,69 @@
+:host {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: #211D19;
+  border: 2px solid #382F24;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 1200px;
+  margin: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.modal-header {
+  padding: 16px;
+  border-bottom: 2px solid #382F24;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2B261F;
+}
+
+.modal-title {
+  margin: 0;
+  color: #FF981F;
+  font-family: "RuneScape UF", "RuneScape", Arial, sans-serif;
+  font-size: 18px;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+  text-align: left;
+}
+
+.modal-content {
+  padding: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #FF981F;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 4px 8px;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #FFB347;
+  }
+} 

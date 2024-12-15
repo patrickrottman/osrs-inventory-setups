@@ -1,0 +1,136 @@
+.loadout-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+
+  h2 {
+    margin: 0;
+    font-size: 24px;
+  }
+}
+
+.json-input-section {
+  max-width: 800px;
+  margin: 0 auto;
+
+  .json-field {
+    width: 100%;
+    
+    textarea {
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 14px;
+    }
+  }
+}
+
+.preview-section {
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h3 {
+      margin: 0;
+      font-size: 20px;
+      color: #FF981F;
+      font-family: "RuneScape UF", "RuneScape", Arial, sans-serif;
+      text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 8px;
+    }
+  }
+}
+
+.loadout-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.section {
+  background-color: #211D19;
+  padding: 16px;
+  border: 2px solid #382F24;
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.7);
+  width: fit-content;
+
+  .section-title {
+    color: #FF981F;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 8px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+    font-family: "RuneScape UF", "RuneScape", Arial, sans-serif;
+    text-transform: uppercase;
+  }
+}
+
+.filtered-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+
+  .item {
+    width: 42px;
+    height: 42px;
+    background-color: #383838;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+    }
+  }
+}
+
+.notes-content {
+  font-family: "RuneScape UF", "RuneScape", Arial, sans-serif;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  font-size: 14px;
+  color: #FF981F;
+  max-width: 600px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+@media (max-width: 600px) {
+  .loadout-container {
+    padding: 16px;
+  }
+
+  .preview-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch !important;
+
+    .preview-actions {
+      justify-content: flex-end;
+    }
+  }
+} 

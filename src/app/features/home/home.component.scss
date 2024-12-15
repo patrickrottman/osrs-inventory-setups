@@ -1,0 +1,362 @@
+@use '@angular/material' as mat;
+
+.home-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--mat-app-background-color);
+  border-bottom: 1px solid var(--mat-divider-color);
+  margin: -1rem -1rem 0;
+  padding: 1rem;
+
+  .controls-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+    .left-controls {
+      flex: 1;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+
+      .search-field {
+        flex: 1;
+        min-width: 200px;
+        
+        ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+          display: none;
+        }
+      }
+
+      .filter-select {
+        width: 160px;
+
+        ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+          display: none;
+        }
+
+        ::ng-deep .mat-mdc-select-trigger {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+      }
+
+      .category-select {
+        width: 160px;
+
+        ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+          display: none;
+        }
+      }
+
+      .sort-group {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+
+        .sort-select {
+          width: 160px;
+
+          ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+            display: none;
+          }
+        }
+
+        .sort-direction {
+          margin: 0 -0.5rem;
+        }
+      }
+
+      .clear-filters {
+        height: 48px;
+      }
+    }
+
+    .create-button {
+      height: 48px;
+      padding: 0 24px;
+      white-space: nowrap;
+    }
+  }
+}
+
+.tags-bar {
+  padding: 0.75rem 0;
+
+  mat-chip-set {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    mat-chip {
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: var(--mat-primary-color);
+        color: var(--mat-primary-contrast-color);
+      }
+
+      &[highlighted] {
+        background-color: var(--mat-primary-color);
+        color: var(--mat-primary-contrast-color);
+      }
+    }
+  }
+}
+
+.loadouts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+
+  .loadout-card {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: var(--mat-card-background-color);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--mat-card-elevated-box-shadow);
+    }
+
+    mat-card-header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--mat-divider-color);
+
+      .header-content {
+        width: 100%;
+
+        .title {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 1rem;
+
+          h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          mat-chip-set {
+            flex-shrink: 0;
+            
+            mat-chip {
+              font-size: 0.8rem;
+              height: 24px;
+            }
+          }
+        }
+      }
+    }
+
+    mat-card-content {
+      padding: 1rem;
+
+      .preview-grid {
+        display: flex;
+        justify-content: center;
+        background: var(--mat-app-background-color);
+        border-radius: 4px;
+        padding: 0.5rem;
+      }
+    }
+
+    mat-card-footer {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--mat-divider-color);
+
+      .stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+        color: var(--mat-card-subtitle-text-color);
+
+        .date {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .metrics {
+          display: flex;
+          gap: 1rem;
+
+          span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+
+            mat-icon {
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.loading-state {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem;
+  color: var(--mat-card-subtitle-text-color);
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+}
+
+.filter-button {
+  &.has-filters {
+    color: #1976d2;
+    border-color: #1976d2;
+  }
+
+  .filter-count {
+    margin-left: 8px;
+    opacity: 0.8;
+  }
+}
+
+::ng-deep {
+  .filter-menu {
+    max-width: none !important;
+    width: 300px !important;
+
+    .mat-mdc-menu-content {
+      padding: 0 !important;
+    }
+  }
+
+  .filter-menu-content {
+    padding: 16px;
+    background: var(--mat-dialog-container-background-color);
+
+    .filter-section {
+      margin-bottom: 16px;
+
+      h3 {
+        margin: 0 0 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--mat-dialog-container-text-color);
+      }
+
+      .filter-list {
+        max-height: 200px;
+        overflow-y: auto;
+
+        .mat-mdc-list-option {
+          height: 40px;
+          font-size: 14px;
+          color: var(--mat-dialog-container-text-color);
+        }
+      }
+    }
+
+    .mat-divider {
+      margin: 16px -16px;
+      border-color: var(--mat-divider-color);
+    }
+
+    .filter-actions {
+      margin-top: 16px;
+      display: flex;
+      justify-content: flex-end;
+
+      button {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .home-container {
+    padding: 0.5rem;
+  }
+
+  .top-bar {
+    margin: -0.5rem -0.5rem 0;
+    padding: 0.5rem;
+
+    .controls-container {
+      flex-direction: column;
+      gap: 0.75rem;
+
+      .left-controls {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+
+        .search-field,
+        .category-select,
+        .sort-select,
+        .filter-select {
+          width: 100%;
+        }
+
+        .sort-group {
+          display: flex;
+          gap: 0.5rem;
+          width: 100%;
+
+          .sort-select {
+            flex: 1;
+          }
+
+          .sort-direction {
+            margin: 0;
+          }
+        }
+
+        .clear-filters {
+          width: 100%;
+        }
+      }
+
+      .create-button {
+        width: 100%;
+      }
+    }
+  }
+
+  .loadouts-grid {
+    grid-template-columns: 1fr;
+  }
+} 

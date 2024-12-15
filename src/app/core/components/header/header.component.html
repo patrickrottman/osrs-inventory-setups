@@ -1,0 +1,97 @@
+<header class="header">
+  <div class="header-content">
+    <div class="logo-section" routerLink="/">
+      <div class="logo">
+        <mat-icon>inventory_2</mat-icon>
+        <div class="title-group">
+          <h1>Inventory Setups</h1>
+          <span class="subtitle">OSRS Community Loadout Manager</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats" *ngIf="isStatsLoaded$ | async; else loadingStats">
+      <div class="stat">
+        <mat-icon>inventory_2</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ (stats$ | async)?.totalLoadouts | number }}</div>
+          <div class="stat-label">Setups</div>
+        </div>
+      </div>
+      <div class="stat">
+        <mat-icon>group</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ (stats$ | async)?.totalUsers | number }}+</div>
+          <div class="stat-label">Users</div>
+        </div>
+      </div>
+      <div class="stat">
+        <span class="fire-emoji">🔥</span>
+        <div class="stat-info">
+          <div class="stat-value">{{ (stats$ | async)?.newToday | number }}+</div>
+          <div class="stat-label">New Today</div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #loadingStats>
+      <div class="stats loading">
+        <div class="stat">
+          <mat-icon>inventory_2</mat-icon>
+          <div class="stat-info">
+            <div class="stat-value placeholder"></div>
+            <div class="stat-label">Setups</div>
+          </div>
+        </div>
+        <div class="stat">
+          <mat-icon>group</mat-icon>
+          <div class="stat-info">
+            <div class="stat-value placeholder"></div>
+            <div class="stat-label">Users</div>
+          </div>
+        </div>
+        <div class="stat">
+          <span class="fire-emoji">🔥</span>
+          <div class="stat-info">
+            <div class="stat-value placeholder"></div>
+            <div class="stat-label">New Today</div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <div class="auth-section" *ngIf="(isLoggedIn$ | async) === false">
+      <button mat-flat-button color="primary" (click)="signIn()">
+        <mat-icon>login</mat-icon>
+        Sign In
+      </button>
+    </div>
+
+    <div class="user-profile" *ngIf="(isLoggedIn$ | async) === true">
+      <ng-container *ngIf="user$ | async as user">
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" class="profile-button">
+          <img [src]="user.photoURL" 
+               [alt]="user.displayName"
+               class="avatar"
+               referrerpolicy="no-referrer">
+        </button>
+      </ng-container>
+
+      <mat-menu #userMenu="matMenu">
+        <div class="menu-item theme-toggle">
+          <mat-slide-toggle
+            [checked]="isDarkTheme$ | async"
+            (change)="toggleTheme()">
+            <mat-icon>{{ (isDarkTheme$ | async) ? 'dark_mode' : 'light_mode' }}</mat-icon>
+            {{ (isDarkTheme$ | async) ? 'Dark' : 'Light' }} Theme
+          </mat-slide-toggle>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="signOut()">
+          <mat-icon>logout</mat-icon>
+          <span>Sign Out</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</header> 

@@ -1,0 +1,12 @@
+<div class="inventory-grid">
+  <div class="inventory-slot" 
+       *ngFor="let index of getSlots(); trackBy: trackByFn"
+       [class.has-item]="getItemAtPosition(index)">
+    <div class="item" *ngIf="getItemAtPosition(index) as item">
+      <img [src]="getItemImageUrl(item.id)" 
+           [alt]="'Item ' + item.id">
+      <div class="item-tooltip">{{ getItemName(item.id) }}</div>
+      <span class="quantity" *ngIf="item.q">{{ item.q | number }}</span>
+    </div>
+  </div>
+</div> 
