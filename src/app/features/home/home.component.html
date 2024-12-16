@@ -6,7 +6,7 @@
         <h3>How to Export from RuneLite</h3>
         <div class="instruction-step">
           <mat-icon>ios_share</mat-icon>
-          <p>Go to Inventory Setups plugin in RuneLite, click the white export icon</p>
+          <p>Go to <a href="https://runelite.net/plugin-hub/show/inventory-setups" target="_blank">Inventory Setups plugin</a> in RuneLite, click the white export icon</p>
         </div>
         <div class="instruction-step">
           <mat-icon>add_circle</mat-icon>
@@ -38,7 +38,7 @@
   </div>
 
   <!-- Top Bar -->
-  <div class="top-bar">
+  <div class="top-bar" [class.hidden]="hideTopBar">
     <div class="controls-container">
       <div class="left-controls">
         <mat-form-field appearance="outline" class="search-field">
