@@ -12,6 +12,7 @@ export interface Setup {
   inv: (Item | null)[];  // 28 slots
   eq: (Item | null)[];   // 14 slots
   afi?: Record<string, Item>;  // Additional filtered items
+  rp?: (Item | null)[];  // Rune pouch slots
   name: string;
   notes?: string;
   hc?: string;  // highlight color

@@ -251,17 +251,17 @@
 
         .preview-grid {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1rem;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 16px;
+          margin-bottom: 16px;
+        }
 
-          @media (max-width: 1200px) {
-            grid-template-columns: 1fr;
-          }
-
-          .section {
-            min-width: 0;
-            overflow: hidden;
-          }
+        .inventory-container {
+          display: flex;
+          gap: 16px;
+          align-items: center;
+          justify-content: center;
+          flex-wrap: wrap;
         }
 
         .section {

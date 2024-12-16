@@ -13,6 +13,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { InventoryGridComponent } from '../../../inventory/components/inventory-grid/inventory-grid.component';
 import { EquipmentSlotsComponent } from '../../../equipment/components/equipment-slots/equipment-slots.component';
+import { RunePouchComponent } from '../../../inventory/components/rune-pouch/rune-pouch.component';
 import { OsrsApiService } from '../../../../core/services/osrs-api.service';
 import { LoadoutService } from '../../../../core/services/loadout.service';
 import { FirebaseService } from '../../../../core/services/firebase.service';
@@ -46,7 +47,8 @@ interface LoadoutPreview {
     MatDividerModule,
     MatChipsModule,
     InventoryGridComponent,
-    EquipmentSlotsComponent
+    EquipmentSlotsComponent,
+    RunePouchComponent
   ]
 })
 export class LoadoutUploaderDialogComponent implements OnInit, OnDestroy {

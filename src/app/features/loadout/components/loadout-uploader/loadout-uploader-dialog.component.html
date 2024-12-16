@@ -98,7 +98,7 @@
           <div class="section">
             <div class="section-title">
               <mat-icon>accessibility</mat-icon>
-              Equipment
+              Equipped Items
             </div>
             <app-equipment-slots
               [equipment]="loadoutPreview.setup.eq"
@@ -110,12 +110,20 @@
           <div class="section">
             <div class="section-title">
               <mat-icon>grid_view</mat-icon>
-              Inventory
+              Storage Items
             </div>
-            <app-inventory-grid
-              [items]="loadoutPreview.setup.inv"
-              [layout]="loadoutPreview.layout ?? []">
-            </app-inventory-grid>
+            <div class="inventory-container">
+              <div class="inventory-wrapper">
+                <app-inventory-grid
+                  [items]="loadoutPreview.setup.inv"
+                  [layout]="loadoutPreview.layout ?? []">
+                </app-inventory-grid>
+              </div>
+              <app-rune-pouch
+                *ngIf="loadoutPreview.setup.rp?.length"
+                [runes]="loadoutPreview.setup.rp || []">
+              </app-rune-pouch>
+            </div>
           </div>
         </div>
 

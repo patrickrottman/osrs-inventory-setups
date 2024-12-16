@@ -11,6 +11,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { LoadoutData, Setup } from '../../../../shared/models/inventory.model';
 import { InventoryGridComponent } from '../../../inventory/components/inventory-grid/inventory-grid.component';
 import { EquipmentSlotsComponent } from '../../../equipment/components/equipment-slots/equipment-slots.component';
+import { RunePouchComponent } from '../../../inventory/components/rune-pouch/rune-pouch.component';
 import { OsrsApiService } from '../../../../core/services/osrs-api.service';
 import { FirebaseService } from '../../../../core/services/firebase.service';
 import { LoadoutService } from '../../../../core/services/loadout.service';
@@ -42,6 +43,7 @@ type SpellbookMap = Record<number, Spellbook>;
     MatDividerModule,
     InventoryGridComponent,
     EquipmentSlotsComponent,
+    RunePouchComponent,
     FirebaseDatePipe
   ],
   providers: [DatePipe]
@@ -165,6 +167,7 @@ export class LoadoutModalComponent {
   }
 
   copyLoadout(): void {
+    // Create the setup object, only including rp if it exists and has items
     const setup: Setup = {
       inv: this.data.setup.inv,
       eq: this.data.setup.eq,
@@ -175,6 +178,11 @@ export class LoadoutModalComponent {
       uh: this.data.setup.uh,
       sb: this.data.setup.sb
     };
+
+    // Only add rp to setup if it exists and has items
+    if (this.data.setup.rp?.length) {
+      setup.rp = this.data.setup.rp;
+    }
 
     const layout = this.calculateLayout(setup);
 
@@ -198,28 +206,37 @@ export class LoadoutModalComponent {
   }
 
   private calculateLayout(setup: Setup): number[] {
-    const layout: number[] = new Array(50).fill(-1);
+    const layout: number[] = new Array(56).fill(-1);  // Initialize all slots with -1
     
-    // Equipment slots in order: head, cape, neck, weapon, body, shield, legs, hands, feet, ring, ammo
-    const eqMapping = [
-      { slot: 0, index: 0 },  // Head
-      { slot: 1, index: 2 },  // Cape
-      { slot: 2, index: 3 },  // Neck
-      { slot: 3, index: 4 },  // Weapon
-      { slot: 4, index: 5 },  // Body
-      { slot: 5, index: 6 },  // Shield
-      { slot: 6, index: 7 },  // Legs
-      { slot: 7, index: 8 },  // Hands
-      { slot: 8, index: 9 },  // Feet
-      { slot: 9, index: 10 }, // Ring
-      { slot: 10, index: 11 }, // Ammo
-      { slot: 11, index: 12 }, // Extra 1
-      { slot: 12, index: 13 }, // Extra 2
-      { slot: 13, index: 14 }  // Extra 3
-    ];
+    // Map inventory items first (starting at index 4)
+    if (setup.inv) {
+      setup.inv.forEach((item, index) => {
+        if (item) {
+          layout[index + 4] = item.id;
+        }
+      });
+    }
 
     // Map equipment items
     if (setup.eq) {
+      // Equipment mapping based on the expected layout
+      const eqMapping = [
+        { slot: 0, index: 1 },  // Head
+        { slot: 1, index: 8 },  // Cape
+        { slot: 2, index: 9 },  // Neck
+        { slot: 3, index: 16 }, // Weapon
+        { slot: 4, index: 17 }, // Body
+        { slot: 5, index: 18 }, // Shield
+        { slot: 6, index: 25 }, // Legs
+        { slot: 7, index: 26 }, // Hands
+        { slot: 8, index: 27 }, // Feet
+        { slot: 9, index: 32 }, // Ring
+        { slot: 10, index: 33 }, // Ammo
+        { slot: 11, index: 34 }, // Extra 1
+        { slot: 12, index: 35 }, // Extra 2
+        { slot: 13, index: 10 }  // Extra 3
+      ];
+
       setup.eq.forEach((item, slot) => {
         if (item) {
           const mapping = eqMapping[slot];
@@ -230,11 +247,13 @@ export class LoadoutModalComponent {
       });
     }
 
-    // Map inventory items starting at index 15
-    if (setup.inv) {
-      setup.inv.forEach((item, index) => {
-        if (item) {
-          layout[index + 15] = item.id;
+    // Map rune pouch items (starting at index 40)
+    // Even if there's no rune pouch, we keep the layout structure the same
+    // The slots will remain -1 if no rune pouch items exist
+    if (setup.rp?.length) {
+      setup.rp.forEach((item, index) => {
+        if (item && index < 4) { // Ensure we only map up to 4 rune slots
+          layout[index + 40] = item.id;
         }
       });
     }

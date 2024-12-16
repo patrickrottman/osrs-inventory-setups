@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { Equipment } from '../../../../shared/models/inventory.model';
 import { OsrsApiService } from '../../../../core/services/osrs-api.service';
 
@@ -31,7 +32,7 @@ type GridPositionsMap = Record<EquipmentSlot, GridPosition>;
   templateUrl: './equipment-slots.component.html',
   styleUrls: ['./equipment-slots.component.scss'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, MatIconModule]
 })
 export class EquipmentSlotsComponent {
   @Input() equipment: (Equipment | null)[] = [];
