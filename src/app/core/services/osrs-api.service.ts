@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { map, catchError, shareReplay, tap } from 'rxjs/operators';
-import { OSRSItem, WikiItemMapping, WikiMappingResponse } from '../models/osrs-api.model';
+import { catchError, shareReplay, tap } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 
 @Injectable({

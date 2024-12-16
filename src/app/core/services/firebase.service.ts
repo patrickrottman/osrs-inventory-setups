@@ -156,10 +156,10 @@ export class FirebaseService {
       data: stats,
       timestamp: Date.now()
     };
-    this.storageService.setItem('stats', this.STATS_CACHE_KEY, cache).subscribe(
-      () => {},
-      error => console.warn('Error saving stats to cache:', error)
-    );
+    this.storageService.setItem('stats', this.STATS_CACHE_KEY, cache).subscribe({
+      next: () => console.debug('Stats cached successfully'),
+      error: error => console.warn('Error saving stats to cache:', error)
+    });
   }
 
   private async refreshStats(): Promise<void> {
