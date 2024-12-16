@@ -220,9 +220,9 @@ export class FirebaseService {
   }
 
   // Make refreshLoadouts public so components can call it
-  async refreshLoadouts(): Promise<void> {
+  async refreshLoadouts(options: LoadoutQueryOptions = { sortBy: 'likes', sortDirection: 'desc', isPublic: true }): Promise<void> {
     try {
-      const result = await this.getLoadouts();
+      const result = await this.getLoadouts(options);
       this.loadoutStateService.updateLoadouts(result.loadouts);
     } catch (error) {
       console.error('Error refreshing loadouts:', error);

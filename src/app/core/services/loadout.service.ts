@@ -44,7 +44,7 @@ const DEFAULT_FILTERS: LoadoutFilters = {
   search: '',
   categories: [],
   tags: [],
-  sortBy: 'date',
+  sortBy: 'likes',
   sortDirection: 'desc',
   showPersonalOnly: false,
   isPublic: true
