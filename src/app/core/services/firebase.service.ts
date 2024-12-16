@@ -7,6 +7,7 @@ import {
   getAuth, 
   signInWithPopup,
   GoogleAuthProvider, 
+  signInAnonymously,
   signOut as firebaseSignOut,
   User,
   onAuthStateChanged,
@@ -257,7 +258,38 @@ export class FirebaseService {
     return this.currentUser.value;
   }
 
-  async signIn(): Promise<void> {
+  async signInAnonymously(): Promise<void> {
+    try {
+      const result = await signInAnonymously(this.auth);
+      const user = result.user;
+      
+      // Create or update user document
+      const userRef = doc(this.db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          displayName: 'Anonymous User',
+          photoURL: null,
+          lastActive: serverTimestamp(),
+          loadoutCount: 0,
+          totalLikes: 0,
+          totalViews: 0,
+          createdAt: serverTimestamp(),
+          isAnonymous: true
+        });
+      } else {
+        await updateDoc(userRef, {
+          lastActive: serverTimestamp()
+        });
+      }
+    } catch (error) {
+      console.error('Error signing in anonymously:', error);
+      throw error;
+    }
+  }
+
+  async signInWithGoogle(): Promise<void> {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ 
       prompt: 'select_account',

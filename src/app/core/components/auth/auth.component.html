@@ -1,12 +1,29 @@
 <ng-container *ngIf="!(user$ | async); else loggedIn">
-  <button mat-button (click)="signIn()">
+  <button mat-button [matMenuTriggerFor]="signInMenu">
     <mat-icon>login</mat-icon>
-    Sign in with Google
+    Sign in
   </button>
+  <mat-menu #signInMenu="matMenu">
+    <button mat-menu-item (click)="signInWithGoogle()">
+      <mat-icon>google</mat-icon>
+      Sign in with Google
+    </button>
+    <button mat-menu-item (click)="signInAnonymously()">
+      <mat-icon>person_outline</mat-icon>
+      Continue as Guest
+    </button>
+  </mat-menu>
 </ng-container>
 
 <ng-template #loggedIn>
-  <span class="user-info">{{ (user$ | async)?.displayName }}</span>
+  <span class="user-info">
+    <ng-container *ngIf="(user$ | async)?.isAnonymous; else namedUser">
+      Guest User
+    </ng-container>
+    <ng-template #namedUser>
+      {{ (user$ | async)?.displayName }}
+    </ng-template>
+  </span>
   <button mat-button (click)="signOut()">
     <mat-icon>logout</mat-icon>
     Sign out
