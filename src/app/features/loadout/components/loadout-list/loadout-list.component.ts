@@ -13,8 +13,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormControl } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
-import { Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil, map, startWith, combineLatest } from 'rxjs/operators';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 
 import { FirebaseService } from '../../../../core/services/firebase.service';
@@ -50,7 +50,8 @@ import { LoadoutService } from '../../../../core/services/loadout.service';
   ]
 })
 export class LoadoutListComponent implements OnInit, OnDestroy {
-  loadouts$: Observable<LoadoutData[]>;
+  filteredLoadouts$: Observable<LoadoutData[]>;
+  private allLoadouts = new BehaviorSubject<LoadoutData[]>([]);
   searchControl: FormControl<string | null>;
   categoryControl: FormControl<Category['type'] | ''>;
   isLoggedIn$: Observable<boolean>;
@@ -70,37 +71,64 @@ export class LoadoutListComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private snackBar: MatSnackBar
   ) {
-    this.loadouts$ = this.firebaseService.loadouts$;
     this.isLoggedIn$ = this.firebaseService.isLoggedIn$;
     this.searchControl = new FormControl('');
     this.categoryControl = new FormControl<Category['type'] | ''>('');
+
+    // Set up client-side filtering
+    this.filteredLoadouts$ = combineLatest([
+      this.allLoadouts,
+      this.searchControl.valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        distinctUntilChanged(),
+        map(search => search?.toLowerCase() || '')
+      ),
+      this.categoryControl.valueChanges.pipe(
+        startWith('')
+      )
+    ]).pipe(
+      map(([loadouts, search, category]) => {
+        let filtered = loadouts;
+
+        // Apply search filter
+        if (search) {
+          filtered = filtered.filter(loadout =>
+            loadout.setup.name.toLowerCase().includes(search) ||
+            loadout.setup.notes?.toLowerCase().includes(search) ||
+            loadout.tags?.some(tag => tag.toLowerCase().includes(search))
+          );
+        }
+
+        // Apply category filter
+        if (category) {
+          filtered = filtered.filter(loadout => loadout.category === category);
+        }
+
+        return filtered;
+      })
+    );
   }
 
   ngOnInit(): void {
-    // Initial load
-    this.firebaseService.refreshLoadouts();
-
-    // Set up search with debounce
-    this.searchControl.valueChanges.pipe(
-      takeUntil(this.destroy$),
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(() => {
-      this.firebaseService.refreshLoadouts();
-    });
-
-    // Category filter
-    this.categoryControl.valueChanges.pipe(
+    // Initial load of all loadouts
+    this.firebaseService.loadouts$.pipe(
       takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.firebaseService.refreshLoadouts();
+    ).subscribe(loadouts => {
+      this.allLoadouts.next(loadouts);
+      this.cdr.detectChanges();
     });
+
+    // Initial data fetch
+    this.firebaseService.refreshLoadouts();
 
     // Subscribe to auth state changes
     this.firebaseService.isLoggedIn$.pipe(
-      takeUntil(this.destroy$)
+      takeUntil(this.destroy$),
+      distinctUntilChanged()
     ).subscribe(isLoggedIn => {
       console.log('LoadoutList auth state changed:', isLoggedIn);
+      // Only refresh if logged in state changes
       this.firebaseService.refreshLoadouts();
       this.cdr.detectChanges();
     });

@@ -1,7 +1,7 @@
 <ng-container *ngIf="!(user$ | async); else loggedIn">
   <button mat-button (click)="signIn()">
     <mat-icon>login</mat-icon>
-    Login with Google
+    Sign in with Google
   </button>
 </ng-container>
 
@@ -9,6 +9,6 @@
   <span class="user-info">{{ (user$ | async)?.displayName }}</span>
   <button mat-button (click)="signOut()">
     <mat-icon>logout</mat-icon>
-    Logout
+    Sign out
   </button>
 </ng-template>

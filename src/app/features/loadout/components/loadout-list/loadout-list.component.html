@@ -30,7 +30,7 @@
   </div>
 
   <div class="loadouts-grid">
-    <mat-card *ngFor="let loadout of loadouts$ | async" class="loadout-card" (click)="openLoadout(loadout)">
+    <mat-card *ngFor="let loadout of filteredLoadouts$ | async" class="loadout-card" (click)="openLoadout(loadout)">
       <mat-card-header>
         <mat-card-title>{{ loadout.setup.name }}</mat-card-title>
         <mat-card-subtitle>
