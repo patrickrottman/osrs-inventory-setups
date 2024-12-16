@@ -13,37 +13,39 @@ This project aims to make sharing OSRS gear setups as seamless as possible. Inst
   - Preserves all item filters and additional inventory items
 
 - **Rich Filtering & Search**
-  - Filter by boss/skill categories
+  - Filter by categories and tags
   - Search by setup name or description
-  - Tag-based filtering (Bossing, Slayer, Raids, etc.)
-  - Sort by likes or date
+  - Sort by date, likes, or views
+  - Personal loadouts view
 
 - **User Features**
   - Google authentication
   - Like and save favorite setups
-  - View your created loadouts
+  - Public/private loadout options
   - Dark/light theme support
 
 - **Modern UI/UX**
   - Clean, responsive Material design
-  - Familiar OSRS-style inventory layout
-  - Additional item filters section for potions, runes, etc.
-  - Mobile-first approach
+  - Real-time stats and updates
+  - Mobile-friendly interface
+  - Intuitive drag-and-drop interface
 
 ## Tech Stack
 
 ### Frontend
 - Angular 16
 - Angular Material UI
+- Firebase SDK v9
+- RxJS for state management
 - SCSS with modern CSS features
-- Responsive design with Flexbox/Grid
 
 ### Backend & Services
 - Firebase
   - Authentication with Google
   - Firestore for data storage
   - Security rules for data protection
-  - Hosting
+  - Analytics integration
+  - Real-time updates
 - reCAPTCHA v3 for spam prevention
 
 ## Development
@@ -52,6 +54,7 @@ This project aims to make sharing OSRS gear setups as seamless as possible. Inst
 - Node.js 16+
 - npm 8+
 - Angular CLI (`npm install -g @angular/cli`)
+- Firebase CLI (`npm install -g firebase-tools`)
 
 ### Getting Started
 ```bash
@@ -64,9 +67,6 @@ npm install
 
 # Start development server
 npm start
-
-# Build for production
-npm run build
 ```
 
 The dev server will run at `http://localhost:4200` by default.
@@ -74,28 +74,27 @@ The dev server will run at `http://localhost:4200` by default.
 ### Environment Setup
 1. Create a Firebase project at https://console.firebase.google.com
 2. Enable Google Authentication
-   - Add authorized domains
-   - Configure OAuth consent screen
 3. Create a Firestore database
-   - Start in production mode
-   - Choose a nearby location
 4. Set up reCAPTCHA v3
-   - Get your site key from Google reCAPTCHA admin
 5. Configure environment files:
-   ```bash
-   cp src/environments/environment.template.ts src/environments/environment.ts
-   ```
-6. Add your Firebase and reCAPTCHA config to `environment.ts`
-7. Deploy Firestore security rules:
-   ```bash
-   firebase deploy --only firestore:rules
+   ```typescript
+   // src/environments/environment.ts
+   export const environment = {
+     production: false,
+     firebase: {
+       // Your Firebase config
+     },
+     recaptcha: {
+       siteKey: 'your-recaptcha-site-key'
+     }
+   };
    ```
 
 ### Project Structure
 ```
 src/
 ├── app/
-│   ├── core/           # Singleton services, header/footer
+│   ├── core/           # Services, guards, interceptors
 │   ├── features/       # Feature modules (loadouts, inventory)
 │   ├── shared/         # Shared components, models, pipes
 │   └── app.module.ts
@@ -109,7 +108,7 @@ src/
 # Build production bundle
 npm run build
 
-# Deploy to Firebase Hosting
+# Deploy to Firebase
 firebase deploy
 ```
 
@@ -123,9 +122,10 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 - Update documentation as needed
 
 ## License
-This project is MIT licensed - see the [LICENSE](LICENSE) file for details.
+This project is MIT licensed.
 
 ## Acknowledgments
-- [RuneLite](https://runelite.net/) - For the amazing Inventory Setups plugin
+- [Inventory Setups Plugin](https://github.com/dillydill123/inventory-setups) - For the amazing Inventory Setups plugin
+- [RuneLite](https://runelite.net/) - For the launcher itself <3
 - [OSRS Wiki](https://oldschool.runescape.wiki/) - Item data and images
 - The OSRS community for feedback and suggestions
