@@ -53,11 +53,19 @@ export class HeaderComponent {
     this.isDarkTheme$ = this.themeService.isDarkTheme$;
   }
 
-  async signIn(): Promise<void> {
+  async signInWithGoogle(): Promise<void> {
     try {
-      await this.firebaseService.signIn();
+      await this.firebaseService.signInWithGoogle();
     } catch (error) {
-      console.error('Error in sign in flow:', error);
+      console.error('Error in Google sign in flow:', error);
+    }
+  }
+
+  async signInAnonymously(): Promise<void> {
+    try {
+      await this.firebaseService.signInAnonymously();
+    } catch (error) {
+      console.error('Error in anonymous sign in flow:', error);
     }
   }
 

@@ -147,9 +147,14 @@
       overflow: hidden;
       line-height: 1;
       border: 2px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.1);
 
       &:hover {
         border-color: rgba(255, 255, 255, 0.4);
+        background-color: rgba(255, 255, 255, 0.15);
       }
 
       .avatar {
@@ -157,6 +162,14 @@
         height: 100%;
         object-fit: cover;
         border-radius: 50%;
+      }
+
+      .anonymous-icon {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        margin: 0;
       }
     }
   }
@@ -330,4 +343,17 @@
       }
     }
   }
+}
+
+.google-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.anonymous-icon {
+  color: #5f6368;
+  margin-right: 8px;
+  vertical-align: middle;
 } 

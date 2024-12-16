@@ -61,23 +61,44 @@
     </ng-template>
 
     <div class="auth-section" *ngIf="(isLoggedIn$ | async) === false">
-      <button mat-flat-button color="primary" (click)="signIn()">
+      <button mat-flat-button [matMenuTriggerFor]="signInMenu" color="primary">
         <mat-icon>login</mat-icon>
-        Sign in with Google
+        Sign in
       </button>
+      <mat-menu #signInMenu="matMenu">
+        <button mat-menu-item (click)="signInWithGoogle()">
+          <img src="assets/google-icon.svg" alt="Google" class="google-icon">
+          Sign in with Google
+        </button>
+        <button mat-menu-item (click)="signInAnonymously()">
+          <mat-icon class="anonymous-icon">person_outline</mat-icon>
+          Continue as Guest
+        </button>
+      </mat-menu>
     </div>
 
     <div class="user-profile" *ngIf="(isLoggedIn$ | async) === true">
       <ng-container *ngIf="user$ | async as user">
         <button mat-icon-button [matMenuTriggerFor]="userMenu" class="profile-button">
-          <img [src]="user.photoURL" 
-               [alt]="user.displayName"
-               class="avatar"
-               referrerpolicy="no-referrer">
+          <ng-container *ngIf="user.isAnonymous; else userAvatar">
+            <mat-icon class="anonymous-icon">person_outline</mat-icon>
+          </ng-container>
+          <ng-template #userAvatar>
+            <img [src]="user.photoURL" 
+                 [alt]="user.displayName"
+                 class="avatar"
+                 referrerpolicy="no-referrer">
+          </ng-template>
         </button>
       </ng-container>
 
       <mat-menu #userMenu="matMenu">
+        <div class="menu-header" *ngIf="user$ | async as user">
+          <div class="user-name">
+            {{ user.isAnonymous ? 'Guest User' : user.displayName }}
+          </div>
+        </div>
+        <mat-divider></mat-divider>
         <div class="menu-item theme-toggle">
           <mat-slide-toggle
             [checked]="isDarkTheme$ | async"
