@@ -1,8 +1,40 @@
 <div class="home-container">
+  <!-- How-to Banner -->
+  <div class="info-banner" *ngIf="showInstructions">
+    <div class="banner-content">
+      <div class="instruction-group">
+        <h3>How to Export from RuneLite</h3>
+        <div class="instruction-step">
+          <mat-icon>ios_share</mat-icon>
+          <p>Go to Inventory Setups plugin in RuneLite, click the white export icon</p>
+        </div>
+        <div class="instruction-step">
+          <mat-icon>add_circle</mat-icon>
+          <p>Click Create and paste your loadout <span class="login-note">(requires login)</span></p>
+        </div>
+      </div>
+      <mat-divider [vertical]="true"></mat-divider>
+      <div class="instruction-group">
+        <h3>How to Import to RuneLite</h3>
+        <div class="instruction-step">
+          <mat-icon>content_copy</mat-icon>
+          <p>Open a loadout and copy it to your clipboard</p>
+        </div>
+        <div class="instruction-step">
+          <mat-icon class="green-icon">save_alt</mat-icon>
+          <p>In RuneLite, click the green import icon and paste the loadout</p>
+        </div>
+      </div>
+    </div>
+    <button mat-icon-button class="close-button" (click)="hideInstructions()" matTooltip="Hide Instructions">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
   <!-- Alert Banner -->
-  <div class="alert-banner warning">
+  <div class="alert-banner warning" style="display: none;">
     <mat-icon>warning</mat-icon>
-    <span>Untradeable items currently don't render correctly. A fix is being investigated.</span>
+    <span>Placeholder for future alert banner.</span>
   </div>
 
   <!-- Top Bar -->

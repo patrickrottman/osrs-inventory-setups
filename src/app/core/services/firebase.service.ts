@@ -5,7 +5,8 @@ import { initializeApp } from 'firebase/app';
 import { 
   Auth, 
   getAuth, 
-  signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider, 
   signOut as firebaseSignOut,
   User,
@@ -114,9 +115,7 @@ export class FirebaseService {
     onAuthStateChanged(this.auth, (user: User | null) => {
       this.currentUser.next(user);
       this.refreshLoadouts();
-      if (user) {
-        this.refreshStats();
-      }
+      this.refreshStats();
     });
 
     // Refresh stats periodically if cached
@@ -195,12 +194,14 @@ export class FirebaseService {
         newToday
       };
 
-      // Update global stats document
-      const statsRef = doc(this.db, 'stats/global');
-      await setDoc(statsRef, {
-        ...stats,
-        lastUpdated: serverTimestamp()
-      }, { merge: true });
+      // Only update the stats document if user is authenticated
+      if (this.currentUser.value) {
+        const statsRef = doc(this.db, 'stats/global');
+        await setDoc(statsRef, {
+          ...stats,
+          lastUpdated: serverTimestamp()
+        }, { merge: true });
+      }
 
       // Update local stats and cache
       this.stats.next(stats);
@@ -261,31 +262,42 @@ export class FirebaseService {
     provider.setCustomParameters({ prompt: 'select_account' });
     
     try {
-      const result = await signInWithPopup(this.auth, provider);
-      
-      // Create or update user document
-      const userRef = doc(this.db, 'users', result.user.uid);
-      const userSnap = await getDoc(userRef);
-
-      // If user doesn't exist, initialize their stats
-      if (!userSnap.exists()) {
-        await setDoc(userRef, {
-          displayName: result.user.displayName,
-          photoURL: result.user.photoURL,
-          lastActive: serverTimestamp(),
-          loadoutCount: 0,
-          totalLikes: 0,
-          totalViews: 0,
-          createdAt: serverTimestamp()
-        });
-      } else {
-        // Just update the last active timestamp
-        await updateDoc(userRef, {
-          lastActive: serverTimestamp()
-        });
-      }
+      await signInWithRedirect(this.auth, provider);
     } catch (error) {
       console.error('Error signing in with Google:', error);
+      throw error;
+    }
+  }
+
+  async handleRedirectResult(): Promise<User | null> {
+    try {
+      const result = await getRedirectResult(this.auth);
+      if (result) {
+        const user = result.user;
+        
+        const userRef = doc(this.db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+          await setDoc(userRef, {
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            lastActive: serverTimestamp(),
+            loadoutCount: 0,
+            totalLikes: 0,
+            totalViews: 0,
+            createdAt: serverTimestamp()
+          });
+        } else {
+          await updateDoc(userRef, {
+            lastActive: serverTimestamp()
+          });
+        }
+        return user;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error handling redirect result:', error);
       throw error;
     }
   }

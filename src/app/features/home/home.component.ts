@@ -68,6 +68,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   selectedTags = new FormControl<string[]>([]);
   sortControl = new FormControl<'date' | 'likes'>('likes');
   sortDirectionControl = new FormControl<'asc' | 'desc'>('desc');
+  showInstructions = true;
 
   readonly categories: { value: Category['type']; label: string }[] = [
     { value: 'Boss', label: 'Boss' },
@@ -123,6 +124,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.loadoutService.updateFilters({ sortDirection: value });
       }
     });
+
+    // Check if instructions should be hidden
+    this.showInstructions = localStorage.getItem('hideInstructions') !== 'true';
   }
 
   private updateFilters() {
@@ -213,5 +217,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       // Close menu
       event.preventDefault();
     }
+  }
+
+  hideInstructions(): void {
+    this.showInstructions = false;
+    localStorage.setItem('hideInstructions', 'true');
   }
 } 

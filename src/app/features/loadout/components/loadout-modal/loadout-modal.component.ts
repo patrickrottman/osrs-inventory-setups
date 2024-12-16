@@ -6,6 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 import { LoadoutData, Setup } from '../../../../shared/models/inventory.model';
 import { InventoryGridComponent } from '../../../inventory/components/inventory-grid/inventory-grid.component';
 import { EquipmentSlotsComponent } from '../../../equipment/components/equipment-slots/equipment-slots.component';
@@ -36,6 +38,8 @@ type SpellbookMap = Record<number, Spellbook>;
     MatSnackBarModule,
     MatTooltipModule,
     MatChipsModule,
+    MatMenuModule,
+    MatDividerModule,
     InventoryGridComponent,
     EquipmentSlotsComponent,
     FirebaseDatePipe
@@ -111,9 +115,7 @@ export class LoadoutModalComponent {
   }
 
   getItemName(id: number): string {
-    const item = this.osrsApi.getCachedItem(id);
-    if (!item) return `Item ${id}`;
-    return item.name.replace(/_/g, ' ');
+    return this.osrsApi.getItemName(id);
   }
 
   getFilteredItems() {

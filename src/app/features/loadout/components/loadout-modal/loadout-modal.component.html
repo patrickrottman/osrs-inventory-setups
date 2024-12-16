@@ -2,9 +2,10 @@
   <div class="header">
     <h2 mat-dialog-title>
       <mat-icon>inventory_2</mat-icon>
-      {{ data.setup.name }}
+      <span>{{ data.setup.name }}</span>
     </h2>
-    <div class="header-actions">
+    <!-- Desktop Actions -->
+    <div class="header-actions desktop-actions">
       <button mat-icon-button 
               [color]="hasLiked ? 'warn' : ''" 
               (click)="toggleLike()"
@@ -25,6 +26,33 @@
       <button mat-icon-button mat-dialog-close matTooltip="Close">
         <mat-icon>close</mat-icon>
       </button>
+    </div>
+    <!-- Mobile Actions -->
+    <div class="header-actions mobile-actions">
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item
+                (click)="toggleLike()"
+                [disabled]="(isLoggedIn$ | async) === false">
+          <mat-icon [color]="hasLiked ? 'warn' : ''">{{ hasLiked ? 'favorite' : 'favorite_border' }}</mat-icon>
+          <span [class.warn-text]="hasLiked">{{ hasLiked ? 'Unlike' : 'Like' }}</span>
+        </button>
+        <button mat-menu-item (click)="copyLoadout()">
+          <mat-icon>content_copy</mat-icon>
+          <span>Copy Loadout</span>
+        </button>
+        <button mat-menu-item *ngIf="isOwner" (click)="deleteLoadout()">
+          <mat-icon color="warn">delete</mat-icon>
+          <span class="warn-text">Delete Loadout</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item mat-dialog-close>
+          <mat-icon>close</mat-icon>
+          <span>Close</span>
+        </button>
+      </mat-menu>
     </div>
   </div>
 

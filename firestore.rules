@@ -27,7 +27,8 @@ service cloud.firestore {
 
     // Stats collection
     match /stats/global {
-      allow read, write: if isSignedIn();
+      allow read: if true;
+      allow write: if isSignedIn();
     }
 
     // Allow collection group query for likes

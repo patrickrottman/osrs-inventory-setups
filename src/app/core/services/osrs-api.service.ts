@@ -10,11 +10,10 @@ import { StorageService } from './storage.service';
 })
 export class OsrsApiService {
   private readonly WIKI_API = 'https://prices.runescape.wiki/api/v1/osrs';
-  private readonly WIKI_CDN = 'https://oldschool.runescape.wiki/images';
-  private readonly STORAGE_KEY = 'osrs_item_mapping';
+  private readonly RUNELITE_STATIC = 'https://raw.githubusercontent.com/runelite/static.runelite.net/master/cache/item';
+  private readonly STORAGE_KEY_NAMES = 'osrs_item_names';
   private readonly CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-  private itemCache = new Map<number, OSRSItem>();
-  private mappingCache: WikiItemMapping | null = null;
+  private itemNamesCache: Record<string, string> | null = null;
   private failedImages = new Set<number>();
   private imageCache = new Map<number, string>();
   private loadingImages = new Set<number>();
@@ -23,8 +22,8 @@ export class OsrsApiService {
     private http: HttpClient,
     private storageService: StorageService
   ) {
-    this.loadCacheFromStorage();
-    this.fetchItemMapping().subscribe();
+    this.loadNamesFromStorage();
+    this.fetchItemNames().subscribe();
   }
 
   private getHeaders(): HttpHeaders {
@@ -33,63 +32,44 @@ export class OsrsApiService {
     });
   }
 
-  private loadCacheFromStorage(): void {
-    this.storageService.getItem<{ data: WikiItemMapping, timestamp: number }>('items', this.STORAGE_KEY).subscribe(stored => {
+  private loadNamesFromStorage(): void {
+    this.storageService.getItem<{ data: Record<string, string>, timestamp: number }>('items', this.STORAGE_KEY_NAMES).subscribe(stored => {
       if (stored && Date.now() - stored.timestamp < this.CACHE_DURATION) {
-        this.mappingCache = stored.data;
-        Object.values(stored.data).forEach((item: OSRSItem) => {
-          this.itemCache.set(item.id, item);
-        });
+        this.itemNamesCache = stored.data;
       }
     });
   }
 
-  private saveCache(data: WikiItemMapping): void {
-    this.storageService.setItem('items', this.STORAGE_KEY, {
+  private saveNamesToStorage(data: Record<string, string>): void {
+    this.storageService.setItem('items', this.STORAGE_KEY_NAMES, {
       data,
       timestamp: Date.now()
     }).subscribe();
   }
 
-  private fetchItemMapping(): Observable<WikiItemMapping> {
-    if (this.mappingCache) {
-      return of(this.mappingCache);
+  private fetchItemNames(): Observable<Record<string, string>> {
+    if (this.itemNamesCache) {
+      return of(this.itemNamesCache);
     }
 
-    return this.http.get<WikiMappingResponse>(`${this.WIKI_API}/mapping`, { headers: this.getHeaders() }).pipe(
-      map(items => {
-        const mapping: WikiItemMapping = {};
-        items.forEach(item => {
-          mapping[item.id] = item;
-        });
-        return mapping;
-      }),
-      tap(mapping => {
-        this.mappingCache = mapping;
-        this.saveCache(mapping);
+    return this.http.get<Record<string, string>>(`${this.RUNELITE_STATIC}/names.json`).pipe(
+      tap(names => {
+        this.itemNamesCache = names;
+        this.saveNamesToStorage(names);
       }),
       catchError(error => {
-        console.error('Error fetching item mapping:', error);
-        return of(this.mappingCache || {});
+        console.error('Error fetching item names:', error);
+        return of(this.itemNamesCache || {});
       }),
       shareReplay(1)
     );
   }
 
-  getItem(id: number): Observable<OSRSItem | null> {
-    if (this.itemCache.has(id)) {
-      return of(this.itemCache.get(id)!);
+  getItemName(id: number): string {
+    if (!this.itemNamesCache) {
+      return `Item ${id}`;
     }
-
-    return this.fetchItemMapping().pipe(
-      map(mapping => {
-        const item = mapping[id];
-        if (item) {
-          this.itemCache.set(id, item);
-        }
-        return item || null;
-      })
-    );
+    return this.itemNamesCache[id] || `Item ${id}`;
   }
 
   getItemImageUrl(id: number): string {
@@ -108,71 +88,31 @@ export class OsrsApiService {
       return this.getPlaceholderImage();
     }
 
-    const item = this.itemCache.get(id);
-    if (!item) {
-      // Only fetch item data if we haven't already started
-      if (!this.loadingImages.has(id)) {
-        this.loadingImages.add(id);
-        this.getItem(id).subscribe(fetchedItem => {
-          if (fetchedItem) {
-            this.tryLoadImage(id, fetchedItem);
-          } else {
-            this.failedImages.add(id);
-            this.loadingImages.delete(id);
-          }
-        });
-      }
-      return this.getPlaceholderImage();
-    }
-
-    // Only try loading the image if we haven't already started
+    // Try loading the image
     if (!this.loadingImages.has(id)) {
       this.loadingImages.add(id);
-      this.tryLoadImage(id, item);
+      this.tryLoadImage(id);
     }
     return this.getPlaceholderImage();
   }
 
-  private tryLoadImage(id: number, item: OSRSItem): void {
-    const baseName = item.wiki_name || item.name;
-    const formattedName = this.formatItemName(baseName);
-    const url = `${this.WIKI_CDN}/${formattedName}.png`;
+  private tryLoadImage(id: number): void {
+    const runeliteUrl = `${this.RUNELITE_STATIC}/icon/${id}.png`;
 
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
-      this.imageCache.set(id, url);
+      this.imageCache.set(id, runeliteUrl);
       this.loadingImages.delete(id);
     };
     img.onerror = () => {
-      const fallbackImg = new Image();
-      fallbackImg.onload = () => {
-        this.imageCache.set(id, url);
-        this.loadingImages.delete(id);
-      };
-      fallbackImg.onerror = () => {
-        this.failedImages.add(id);
-        this.loadingImages.delete(id);
-      };
-      fallbackImg.src = url;
+      this.failedImages.add(id);
+      this.loadingImages.delete(id);
     };
-    img.src = url;
-  }
-
-  private formatItemName(name: string): string {
-    return encodeURIComponent(
-      name
-        .replace(/ /g, '_')
-        .replace(/'/g, '%27')
-        .replace(/\((\d+)\)/, '($1)')
-    );
+    img.src = runeliteUrl;
   }
 
   private getPlaceholderImage(): string {
     return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-  }
-
-  getCachedItem(id: number): OSRSItem | null {
-    return this.itemCache.get(id) || null;
   }
 }
