@@ -19,11 +19,15 @@
   }
 }
 
-.inventory-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 52px);
-  grid-template-rows: repeat(7, 52px);
-  gap: 2px;
+.rune-pouch-wrapper {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.rune-pouch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background-color: var(--inventory-background-color, #211D19);
   border: 2px solid var(--inventory-border-color, #382F24);
   box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.7);
@@ -32,7 +36,14 @@
   margin: 0 auto;
 }
 
-.inventory-slot {
+.rune-slots {
+  display: grid;
+  grid-template-columns: repeat(2, 52px);
+  grid-template-rows: repeat(2, 52px);
+  gap: 2px;
+}
+
+.rune-slot {
   position: relative;
   width: 52px;
   height: 52px;

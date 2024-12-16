@@ -1,6 +1,9 @@
 <div class="equipment-wrapper">
   <div>
-    <div class="section-title" [class.compact]="compact">Equipment</div>
+    <div class="section-title" [class.compact]="compact">
+      <mat-icon>accessibility</mat-icon>
+      Equipment
+    </div>
     <div class="equipment-container">
       <div class="equipment-grid">
         <!-- Head -->
@@ -83,7 +86,10 @@
   </div>
 
   <div *ngIf="!compact" class="spellbook-wrapper">
-    <div class="section-title">Spellbook</div>
+    <div class="section-title">
+      <mat-icon>auto_awesome</mat-icon>
+      Spellbook
+    </div>
     <div class="spellbook-container">
       <div class="equipment-slot spellbook">
         <div class="item">

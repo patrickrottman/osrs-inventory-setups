@@ -161,12 +161,24 @@ $base-item-size: clamp(46px, 4vw, 54px);
 }
 
 .section-title {
-  @include runescape-text;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--inventory-text-color, #FF981F);
   font-size: 14px;
   font-weight: bold;
   text-align: center;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+  font-family: "RuneScape UF", "RuneScape", Arial, sans-serif;
   text-transform: uppercase;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .item {

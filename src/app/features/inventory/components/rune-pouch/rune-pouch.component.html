@@ -1,0 +1,17 @@
+<div class="section-title">
+  <mat-icon>auto_awesome</mat-icon>
+  Rune Pouch
+</div>
+<div class="rune-pouch-wrapper">
+  <div class="rune-pouch">
+    <div class="rune-slots">
+      <div class="rune-slot" *ngFor="let rune of runes">
+        <div class="item" *ngIf="rune">
+          <img [src]="getItemImageUrl(rune.id)" [alt]="'Item ' + rune.id">
+          <div class="item-tooltip">{{ getItemName(rune.id) }}</div>
+          <span class="quantity" *ngIf="rune.q">{{ rune.q | number }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

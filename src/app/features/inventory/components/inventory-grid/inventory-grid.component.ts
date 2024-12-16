@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { InventoryItem } from '../../../../shared/models/inventory.model';
 import { OsrsApiService } from '../../../../core/services/osrs-api.service';
 
@@ -8,7 +9,7 @@ import { OsrsApiService } from '../../../../core/services/osrs-api.service';
   templateUrl: './inventory-grid.component.html',
   styleUrls: ['./inventory-grid.component.scss'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, MatIconModule]
 })
 export class InventoryGridComponent implements OnInit {
   @Input() items: (InventoryItem | null)[] = [];

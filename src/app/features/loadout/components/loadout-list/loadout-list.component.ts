@@ -25,6 +25,7 @@ import { FirebaseDatePipe } from '../../../../shared/pipes/firebase-date.pipe';
 import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 import { InventoryGridComponent } from '../../../inventory/components/inventory-grid/inventory-grid.component';
 import { LoadoutService } from '../../../../core/services/loadout.service';
+import { RunePouchComponent } from '../../../inventory/components/rune-pouch/rune-pouch.component';
 
 @Component({
   selector: 'app-loadout-list',
@@ -46,7 +47,8 @@ import { LoadoutService } from '../../../../core/services/loadout.service';
     FormsModule,
     ReactiveFormsModule,
     FirebaseDatePipe,
-    InventoryGridComponent
+    InventoryGridComponent,
+    RunePouchComponent
   ]
 })
 export class LoadoutListComponent implements OnInit, OnDestroy {

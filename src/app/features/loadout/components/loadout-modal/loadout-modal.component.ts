@@ -11,6 +11,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { LoadoutData, Setup } from '../../../../shared/models/inventory.model';
 import { InventoryGridComponent } from '../../../inventory/components/inventory-grid/inventory-grid.component';
 import { EquipmentSlotsComponent } from '../../../equipment/components/equipment-slots/equipment-slots.component';
+import { RunePouchComponent } from '../../../inventory/components/rune-pouch/rune-pouch.component';
 import { OsrsApiService } from '../../../../core/services/osrs-api.service';
 import { FirebaseService } from '../../../../core/services/firebase.service';
 import { LoadoutService } from '../../../../core/services/loadout.service';
@@ -42,6 +43,7 @@ type SpellbookMap = Record<number, Spellbook>;
     MatDividerModule,
     InventoryGridComponent,
     EquipmentSlotsComponent,
+    RunePouchComponent,
     FirebaseDatePipe
   ],
   providers: [DatePipe]

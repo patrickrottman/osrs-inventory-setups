@@ -62,11 +62,17 @@
         padding-top: 0;
 
         .loadout-preview {
-          margin: -8px;
-          padding: 8px;
-          background: rgba(0, 0, 0, 0.03);
-          border-radius: 4px;
-          margin-bottom: 1rem;
+          display: flex;
+          justify-content: center;
+          margin: 16px 0;
+
+          .inventory-container {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+          }
         }
 
         .notes {
