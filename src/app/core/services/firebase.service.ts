@@ -9,7 +9,8 @@ import {
   GoogleAuthProvider, 
   signOut as firebaseSignOut,
   User,
-  onAuthStateChanged
+  onAuthStateChanged,
+  browserPopupRedirectResolver
 } from 'firebase/auth';
 import { 
   Firestore, 
@@ -258,10 +259,13 @@ export class FirebaseService {
 
   async signIn(): Promise<void> {
     const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
+    provider.setCustomParameters({ 
+      prompt: 'select_account',
+      display: 'popup'
+    });
     
     try {
-      const result = await signInWithPopup(this.auth, provider);
+      const result = await signInWithPopup(this.auth, provider, browserPopupRedirectResolver);
       const user = result.user;
       
       const userRef = doc(this.db, 'users', user.uid);
