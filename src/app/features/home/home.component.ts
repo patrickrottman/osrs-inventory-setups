@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -16,7 +16,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
@@ -57,7 +57,7 @@ import { EquipmentSlotsComponent } from '../equipment/components/equipment-slots
   ],
   providers: [DatePipe]
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   loadouts$: Observable<LoadoutData[]>;
   availableTags$: Observable<string[]>;
   isLoggedIn$: Observable<boolean>;
@@ -69,8 +69,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   sortControl = new FormControl<'date' | 'likes'>('likes');
   sortDirectionControl = new FormControl<'asc' | 'desc'>('desc');
   showInstructions = true;
-  hideTopBar = false;
-  lastScrollTop = 0;
+  showMobileSearch = false;
+  @ViewChild('searchInput') searchInput!: ElementRef;
+
+  private subscriptions = new Subscription();
+  private observer: IntersectionObserver | null = null;
+  isFooterVisible = false;
 
   readonly categories: { value: Category['type']; label: string }[] = [
     { value: 'Boss', label: 'Boss' },
@@ -98,37 +102,81 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // Set up search with debounce
-    this.searchControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(value => {
-      this.loadoutService.updateFilters({ search: value || '' });
-    });
+    this.subscriptions.add(
+      this.searchControl.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      ).subscribe(value => {
+        this.loadoutService.updateFilters({ search: value || '' });
+      })
+    );
 
     // Combined category and tag filter
-    this.selectedCategories.valueChanges.subscribe(() => {
-      this.updateFilters();
-    });
+    this.subscriptions.add(
+      this.selectedCategories.valueChanges.subscribe(() => {
+        this.updateFilters();
+      })
+    );
 
-    this.selectedTags.valueChanges.subscribe(() => {
-      this.updateFilters();
-    });
+    this.subscriptions.add(
+      this.selectedTags.valueChanges.subscribe(() => {
+        this.updateFilters();
+      })
+    );
 
     // Sort controls
-    this.sortControl.valueChanges.subscribe(value => {
-      if (value) {
-        this.loadoutService.updateFilters({ sortBy: value });
-      }
-    });
+    this.subscriptions.add(
+      this.sortControl.valueChanges.subscribe(value => {
+        if (value) {
+          this.loadoutService.updateFilters({ sortBy: value });
+        }
+      })
+    );
 
-    this.sortDirectionControl.valueChanges.subscribe(value => {
-      if (value) {
-        this.loadoutService.updateFilters({ sortDirection: value });
-      }
-    });
+    this.subscriptions.add(
+      this.sortDirectionControl.valueChanges.subscribe(value => {
+        if (value) {
+          this.loadoutService.updateFilters({ sortDirection: value });
+        }
+      })
+    );
 
     // Check if instructions should be hidden
     this.showInstructions = localStorage.getItem('hideInstructions') !== 'true';
+  }
+
+  ngAfterViewInit() {
+    // Set up intersection observer for footer visibility
+    const footer = document.querySelector('app-footer');
+    if (footer && window.IntersectionObserver) {
+      this.observer = new IntersectionObserver(
+        (entries) => {
+          const isIntersecting = entries[0].isIntersecting;
+          // Add a small buffer before triggering the change
+          if (isIntersecting !== this.isFooterVisible) {
+            this.isFooterVisible = isIntersecting;
+            // Force change detection since we're in an async callback
+            requestAnimationFrame(() => {
+              document.body.classList.toggle('footer-visible', this.isFooterVisible);
+            });
+          }
+        },
+        {
+          threshold: 0,
+          rootMargin: '100px' // Start transition before footer is fully visible
+        }
+      );
+      this.observer.observe(footer);
+    }
+  }
+
+  ngOnDestroy() {
+    // Clean up the observer
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+    this.subscriptions.unsubscribe();
+    this.loadoutService.resetFilters();
   }
 
   private updateFilters() {
@@ -155,11 +203,21 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.sortControl.setValue('likes');
     this.sortDirectionControl.setValue('desc');
     this.loadoutService.resetFilters();
+    
+    if (this.showMobileSearch) {
+      this.closeMobileSearch();
+    }
   }
 
-  ngOnDestroy() {
-    // Reset filters when leaving the page
-    this.loadoutService.resetFilters();
+  openMobileSearch() {
+    this.showMobileSearch = true;
+    setTimeout(() => {
+      this.searchInput?.nativeElement?.focus();
+    }, 300);
+  }
+
+  closeMobileSearch() {
+    this.showMobileSearch = false;
   }
 
   @HostListener('window:scroll', ['$event'])
@@ -169,19 +227,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     const documentHeight = document.documentElement.scrollHeight;
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const scrollBottom = scrollTop + windowHeight;
-
-    // Only apply hide/show behavior on mobile
-    if (window.innerWidth <= 768) {
-      // Determine scroll direction
-      if (scrollTop > this.lastScrollTop && scrollTop > 100) {
-        // Scrolling down & past the initial 100px
-        this.hideTopBar = true;
-      } else {
-        // Scrolling up
-        this.hideTopBar = false;
-      }
-      this.lastScrollTop = scrollTop;
-    }
 
     if (documentHeight - scrollBottom < 200) { // Load more when within 200px of bottom
       this.loadMore();
@@ -223,19 +268,17 @@ export class HomeComponent implements OnInit, OnDestroy {
     return direction === 'asc' ? 'arrow_upward' : 'arrow_downward';
   }
 
-  handleFilterKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      // Handle filter selection
-    }
-    if (event.key === 'Escape') {
-      // Close menu
-      event.preventDefault();
-    }
-  }
-
   hideInstructions(): void {
     this.showInstructions = false;
     localStorage.setItem('hideInstructions', 'true');
+  }
+
+  handleFilterKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+    }
+    if (event.key === 'Escape') {
+      event.preventDefault();
+    }
   }
 } 

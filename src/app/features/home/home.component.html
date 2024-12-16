@@ -37,8 +37,8 @@
     <span>Placeholder for future alert banner.</span>
   </div>
 
-  <!-- Top Bar -->
-  <div class="top-bar" [class.hidden]="hideTopBar">
+  <!-- Desktop Controls -->
+  <div class="top-bar desktop-only">
     <div class="controls-container">
       <div class="left-controls">
         <mat-form-field appearance="outline" class="search-field">
@@ -136,6 +136,85 @@
     </div>
   </div>
 
+  <!-- Mobile Search Interface -->
+  <div class="mobile-search-interface">
+    <!-- Bottom Action Bar -->
+    <div class="mobile-action-bar">
+      <button mat-icon-button (click)="openMobileSearch()" class="search-trigger" [class.has-filters]="hasActiveFilters()">
+        <mat-icon>search</mat-icon>
+        <span class="filter-badge" *ngIf="hasActiveFilters()">
+          {{ (selectedCategories.value?.length ?? 0) + (selectedTags.value?.length ?? 0) }}
+        </span>
+      </button>
+      <button mat-icon-button [matMenuTriggerFor]="sortMenu">
+        <mat-icon>sort</mat-icon>
+      </button>
+      <button mat-fab color="primary" (click)="openCreateDialog()" [disabled]="(isLoggedIn$ | async) === false">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <!-- Sort Menu -->
+    <mat-menu #sortMenu="matMenu">
+      <button mat-menu-item *ngFor="let option of sortOptions" 
+              (click)="sortControl.setValue(option.key)">
+        <mat-icon>{{ option.icon }}</mat-icon>
+        <span>{{ option.label }}</span>
+        <mat-icon *ngIf="sortControl.value === option.key">check</mat-icon>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="toggleSortDirection()">
+        <mat-icon>{{ getSortIcon() }}</mat-icon>
+        <span>{{ sortDirectionControl.value === 'asc' ? 'Ascending' : 'Descending' }}</span>
+      </button>
+    </mat-menu>
+
+    <!-- Mobile Search Overlay -->
+    <div class="mobile-search-overlay" *ngIf="showMobileSearch">
+      <div class="search-header">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput [formControl]="searchControl" placeholder="Search loadouts" #searchInput>
+          <button mat-icon-button matSuffix *ngIf="searchControl.value" (click)="searchControl.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+        <button mat-icon-button (click)="closeMobileSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="filter-sections">
+        <div class="filter-section">
+          <h3>Categories</h3>
+          <mat-selection-list [formControl]="selectedCategories" class="filter-list">
+            <mat-list-option *ngFor="let cat of categories" [value]="cat.value">
+              {{ cat.label }}
+            </mat-list-option>
+          </mat-selection-list>
+        </div>
+
+        <div class="filter-section" *ngIf="availableTags$ | async as tags">
+          <h3>Tags</h3>
+          <mat-selection-list [formControl]="selectedTags" class="filter-list">
+            <mat-list-option *ngFor="let tag of tags" [value]="tag">
+              {{ tag }}
+            </mat-list-option>
+          </mat-selection-list>
+        </div>
+      </div>
+
+      <div class="search-footer">
+        <button mat-stroked-button (click)="clearFilters()" [disabled]="!hasActiveFilters()">
+          Clear All
+        </button>
+        <button mat-flat-button color="primary" (click)="closeMobileSearch()">
+          Show Results
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Loadouts Grid -->
   <div class="loadouts-grid">
     <mat-card *ngFor="let loadout of loadouts$ | async" class="loadout-card" (click)="openLoadout(loadout)">
@@ -187,6 +266,6 @@
   <div class="no-results" *ngIf="(loadouts$ | async)?.length === 0 && !(paginationState$ | async)?.loading">
     <mat-icon>search_off</mat-icon>
     <p>No loadouts found</p>
-    <button mat-stroked-button color="primary" (click)="clearFilters()">Clear Filters</button>
+    <button mat-stroked-button color="primary" (click)="clearFilters()" [disabled]="!hasActiveFilters()">Clear Filters</button>
   </div>
 </div> 
