@@ -404,6 +404,19 @@ export class LoadoutService {
       const loadoutData = loadoutSnap.data() as LoadoutData;
       const ownerRef = this.firebaseService.doc(`users/${loadoutData.userId}`);
 
+      // Update local state first
+      const currentLoadouts = this.loadoutStateService.getCurrentLoadouts();
+      const updatedLoadouts = currentLoadouts.map(loadout => {
+        if (loadout.id === loadoutId) {
+          return {
+            ...loadout,
+            likes: (loadout.likes || 0) + (hasLiked ? -1 : 1)
+          };
+        }
+        return loadout;
+      });
+      this.loadoutStateService.updateLoadouts(updatedLoadouts);
+
       // Now perform the transaction with no reads
       await runTransaction(db, async (transaction) => {
         if (hasLiked) {
@@ -435,9 +448,6 @@ export class LoadoutService {
           });
         }
       });
-
-      // Refresh the loadouts list
-      this.loadInitialData();
     } catch (error) {
       console.error('Error toggling like:', error);
       throw error;

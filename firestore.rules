@@ -10,18 +10,30 @@ service cloud.firestore {
     match /loadouts/{loadoutId} {
       allow read: if true;
       allow create: if isSignedIn();
-      allow update, delete: if isSignedIn() && request.auth.uid == resource.data.userId;
+      allow update: if isSignedIn() && (
+        // Allow owner to update their loadout
+        request.auth.uid == resource.data.userId ||
+        // Allow any authenticated user to update likes count
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes'])
+      );
+      allow delete: if isSignedIn() && request.auth.uid == resource.data.userId;
     }
 
     // Users collection and subcollections
     match /users/{userId} {
       allow read: if true;
-      allow write: if isSignedIn() && request.auth.uid == userId;
+      // Allow updates to totalLikes field by any authenticated user
+      allow update: if isSignedIn() && (
+        request.auth.uid == userId ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalLikes', 'lastUpdated'])
+      );
+      // Allow other writes only by the user
+      allow create, delete: if isSignedIn() && request.auth.uid == userId;
 
       // Allow access to likes subcollection
       match /likes/{likeId} {
         allow read: if true;
-        allow write: if isSignedIn() && request.auth.uid == userId;
+        allow create, delete: if isSignedIn() && request.auth.uid == userId;
       }
     }
 
@@ -34,7 +46,7 @@ service cloud.firestore {
     // Allow collection group query for likes
     match /{path=**}/likes/{likeId} {
       allow read: if true;
-      allow delete: if isSignedIn();
+      allow create, delete: if isSignedIn() && request.auth.uid == path[1];
     }
   }
 } 
