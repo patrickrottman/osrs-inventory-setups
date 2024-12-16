@@ -69,6 +69,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   sortControl = new FormControl<'date' | 'likes'>('likes');
   sortDirectionControl = new FormControl<'asc' | 'desc'>('desc');
   showInstructions = true;
+  hideTopBar = false;
+  lastScrollTop = 0;
 
   readonly categories: { value: Category['type']; label: string }[] = [
     { value: 'Boss', label: 'Boss' },
@@ -162,11 +164,24 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   @HostListener('window:scroll', ['$event'])
   onScroll() {
-    // Check if we're near the bottom of the page
+    // Check if we're near the bottom of the page for infinite scroll
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const scrollBottom = scrollTop + windowHeight;
+
+    // Only apply hide/show behavior on mobile
+    if (window.innerWidth <= 768) {
+      // Determine scroll direction
+      if (scrollTop > this.lastScrollTop && scrollTop > 100) {
+        // Scrolling down & past the initial 100px
+        this.hideTopBar = true;
+      } else {
+        // Scrolling up
+        this.hideTopBar = false;
+      }
+      this.lastScrollTop = scrollTop;
+    }
 
     if (documentHeight - scrollBottom < 200) { // Load more when within 200px of bottom
       this.loadMore();
