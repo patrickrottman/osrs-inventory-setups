@@ -65,7 +65,7 @@ export class StorageService {
     }
   }
 
-  setItem(storeName: string, key: string, value: any): Observable<void> {
+  setItem<T>(storeName: string, key: string, value: T): Observable<void> {
     // If IndexedDB is not available or errored, just return success
     if (this.dbError || !this.db) {
       return of(undefined);

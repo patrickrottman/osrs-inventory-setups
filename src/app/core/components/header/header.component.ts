@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -33,7 +33,7 @@ interface Stats {
     RouterModule
   ]
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   isLoggedIn$: Observable<boolean>;
   user$: Observable<User | null>;
   stats$: Observable<Stats>;
@@ -53,11 +53,23 @@ export class HeaderComponent {
     this.isDarkTheme$ = this.themeService.isDarkTheme$;
   }
 
+  async ngOnInit() {
+    // Check for redirect result when component initializes
+    try {
+      const user = await this.firebaseService.handleRedirectResult();
+      if (user) {
+        console.log('User signed in successfully');
+      }
+    } catch (error) {
+      console.error('Error handling redirect result:', error);
+    }
+  }
+
   async signIn(): Promise<void> {
     try {
       await this.firebaseService.signIn();
     } catch (error) {
-      console.error('Error signing in:', error);
+      console.error('Error in sign in flow:', error);
     }
   }
 

@@ -238,10 +238,6 @@ export class LoadoutService {
 
   async createLoadout(loadout: LoadoutData): Promise<string> {
     try {
-      // Get reCAPTCHA token
-      const token = await this.recaptchaService.executeRecaptcha('create_loadout');
-      
-      // TODO: Send token to backend for verification
       const userId = await this.firebaseService.getCurrentUserId();
       if (!userId) {
         throw new Error('Must be logged in to create a loadout');

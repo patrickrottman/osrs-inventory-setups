@@ -182,8 +182,7 @@ export class LoadoutUploaderDialogComponent implements OnInit, OnDestroy {
   }
 
   getItemName(id: number): string {
-    const item = this.osrsApi.getCachedItem(id);
-    return item?.name || `Item ${id}`;
+    return this.osrsApi.getItemName(id);
   }
 
   getAfiItems(): KeyValue<string, Item>[] {

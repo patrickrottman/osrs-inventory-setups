@@ -2,7 +2,7 @@ export const environment = {
   production: true,
   firebase: {
     apiKey: "AIzaSyBe2FU3zcKzQPcEAe02PAGO7yna9QXjzMk",
-    authDomain: "inventory-setups.firebaseapp.com",
+    authDomain: "inventorysetups.patrickrottman.com",
     projectId: "inventory-setups",
     storageBucket: "inventory-setups.firebasestorage.app",
     messagingSenderId: "213714247131",

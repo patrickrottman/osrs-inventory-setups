@@ -71,9 +71,7 @@ export class EquipmentSlotsComponent {
   }
 
   getItemName(id: number): string {
-    const item = this.osrsApi.getCachedItem(id);
-    if (!item) return `Item ${id}`;
-    return item.name.replace(/_/g, ' ');
+    return this.osrsApi.getItemName(id);
   }
 
   getSpellbookImage(): string {
