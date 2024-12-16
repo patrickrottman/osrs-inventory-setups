@@ -14,10 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class AuthComponent {
   user$ = this.firebaseService.currentUser$;
 
-  constructor(private firebaseService: FirebaseService) {
-    // Initialize Firebase auth
-    this.firebaseService.initializeAuth();
-  }
+  constructor(private firebaseService: FirebaseService) {}
 
   async signIn(): Promise<void> {
     await this.firebaseService.signIn();
