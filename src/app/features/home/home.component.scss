@@ -14,6 +14,11 @@
   border-bottom: 1px solid var(--mat-divider-color);
   margin: -1rem -1rem 0;
   padding: 1rem;
+  transition: transform 0.3s ease;
+
+  &.hidden {
+    transform: translateY(-100%);
+  }
 
   .controls-container {
     max-width: 1600px;
@@ -311,9 +316,19 @@
     padding: 0.5rem;
   }
 
+  .info-banner {
+    margin: -0.5rem -0.5rem 0.5rem;
+    border-radius: 0;
+  }
+
   .top-bar {
-    margin: -0.5rem -0.5rem 0;
+    margin: 0 -0.5rem 1rem -0.5rem;
     padding: 0.5rem;
+
+    // When instructions are showing, adjust the top margin
+    .info-banner + & {
+      margin-top: 0;
+    }
 
     .controls-container {
       flex-direction: column;
@@ -323,11 +338,11 @@
         flex-direction: column;
         align-items: stretch;
         width: 100%;
+        gap: 0.75rem;
 
         .search-field,
-        .category-select,
-        .sort-select,
-        .filter-select {
+        .filter-select,
+        .sort-select {
           width: 100%;
         }
 
@@ -405,6 +420,7 @@
 
   .instruction-group {
     flex: 1;
+    min-width: 0;
 
     h3 {
       margin: 0 0 16px;
@@ -415,7 +431,7 @@
 
     .instruction-step {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 8px;
       margin-bottom: 12px;
 
@@ -425,7 +441,14 @@
 
       mat-icon {
         color: var(--mat-primary);
-        margin-top: 0;
+        flex-shrink: 0;
+        font-size: 24px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
 
         &.green-icon {
           color: #00C853;
@@ -439,6 +462,21 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 4px;
+        min-width: 0;
+
+        a {
+          color: var(--mat-primary);
+          text-decoration: underline;
+          font-weight: 500;
+          transition: all 0.2s;
+          padding: 0 2px;
+          border-radius: 2px;
+
+          &:hover {
+            background: rgba(var(--mat-primary-rgb), 0.1);
+            text-decoration: none;
+          }
+        }
       }
 
       .login-note {
@@ -452,6 +490,7 @@
   .close-button {
     opacity: 0.7;
     transition: opacity 0.2s;
+    flex-shrink: 0;
 
     &:hover {
       opacity: 1;
@@ -459,9 +498,11 @@
   }
 }
 
-// Add responsive styles for mobile
-@media (max-width: 600px) {
+// Add responsive styles for mobile and smaller screens
+@media (max-width: 768px) {
   .info-banner {
+    padding: 12px;
+    
     .banner-content {
       flex-direction: column;
       gap: 16px;
@@ -469,6 +510,18 @@
 
     mat-divider[vertical] {
       display: none;
+    }
+
+    .instruction-group {
+      h3 {
+        font-size: 1rem;
+      }
+
+      .instruction-step {
+        p {
+          font-size: 0.9rem;
+        }
+      }
     }
   }
 } 
