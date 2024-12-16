@@ -167,7 +167,7 @@ export class LoadoutModalComponent {
   }
 
   copyLoadout(): void {
-    // Create the setup object, only including rp if it exists and has items
+    // Create the setup object with all fields
     const setup: Setup = {
       inv: this.data.setup.inv,
       eq: this.data.setup.eq,
@@ -178,6 +178,15 @@ export class LoadoutModalComponent {
       uh: this.data.setup.uh,
       sb: this.data.setup.sb
     };
+
+    // Add optional fields if they exist
+    if (this.data.setup.notes) {
+      setup.notes = this.data.setup.notes;
+    }
+
+    if (this.data.setup.afi) {
+      setup.afi = this.data.setup.afi;
+    }
 
     // Only add rp to setup if it exists and has items
     if (this.data.setup.rp?.length) {
