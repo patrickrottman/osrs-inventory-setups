@@ -77,50 +77,31 @@ export class LoadoutListComponent implements OnInit, OnDestroy {
     this.searchControl = new FormControl('');
     this.categoryControl = new FormControl<Category['type'] | ''>('');
 
-    // Set up client-side filtering
-    this.filteredLoadouts$ = combineLatest([
-      this.allLoadouts,
-      this.searchControl.valueChanges.pipe(
-        startWith(''),
-        debounceTime(300),
-        distinctUntilChanged(),
-        map(search => search?.toLowerCase() || '')
-      ),
-      this.categoryControl.valueChanges.pipe(
-        startWith('')
-      )
-    ]).pipe(
-      map(([loadouts, search, category]) => {
-        let filtered = loadouts;
+    // Use LoadoutService for filtered loadouts
+    this.filteredLoadouts$ = this.loadoutService.getFilteredLoadouts();
 
-        // Apply search filter
-        if (search) {
-          filtered = filtered.filter(loadout =>
-            loadout.setup.name.toLowerCase().includes(search) ||
-            loadout.setup.notes?.toLowerCase().includes(search) ||
-            loadout.tags?.some(tag => tag.toLowerCase().includes(search))
-          );
-        }
+    // Subscribe to search changes
+    this.searchControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(search => {
+      this.loadoutService.updateFilters({ search: search || '' });
+    });
 
-        // Apply category filter
-        if (category) {
-          filtered = filtered.filter(loadout => loadout.category === category);
-        }
-
-        return filtered;
-      })
-    );
+    // Subscribe to category changes
+    this.categoryControl.valueChanges.pipe(
+      startWith(''),
+      takeUntil(this.destroy$)
+    ).subscribe(category => {
+      this.loadoutService.updateFilters({ 
+        categories: category ? [category] : [] 
+      });
+    });
   }
 
   ngOnInit(): void {
-    // Initial load of all loadouts
-    this.firebaseService.loadouts$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(loadouts => {
-      this.allLoadouts.next(loadouts);
-      this.cdr.detectChanges();
-    });
-
     // Initial data fetch
     this.firebaseService.refreshLoadouts();
 
