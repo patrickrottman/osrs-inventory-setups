@@ -167,10 +167,10 @@ export class LoadoutModalComponent {
   }
 
   copyLoadout(): void {
+    // Create the setup object, only including rp if it exists and has items
     const setup: Setup = {
       inv: this.data.setup.inv,
       eq: this.data.setup.eq,
-      rp: this.data.setup.rp,
       name: this.data.setup.name,
       hc: this.data.setup.hc,
       hd: this.data.setup.hd,
@@ -178,6 +178,11 @@ export class LoadoutModalComponent {
       uh: this.data.setup.uh,
       sb: this.data.setup.sb
     };
+
+    // Only add rp to setup if it exists and has items
+    if (this.data.setup.rp?.length) {
+      setup.rp = this.data.setup.rp;
+    }
 
     const layout = this.calculateLayout(setup);
 
@@ -201,7 +206,7 @@ export class LoadoutModalComponent {
   }
 
   private calculateLayout(setup: Setup): number[] {
-    const layout: number[] = new Array(56).fill(-1);  // Increased size to 56 to match expected layout
+    const layout: number[] = new Array(56).fill(-1);  // Initialize all slots with -1
     
     // Map inventory items first (starting at index 4)
     if (setup.inv) {
@@ -243,9 +248,11 @@ export class LoadoutModalComponent {
     }
 
     // Map rune pouch items (starting at index 40)
-    if (setup.rp) {
+    // Even if there's no rune pouch, we keep the layout structure the same
+    // The slots will remain -1 if no rune pouch items exist
+    if (setup.rp?.length) {
       setup.rp.forEach((item, index) => {
-        if (item) {
+        if (item && index < 4) { // Ensure we only map up to 4 rune slots
           layout[index + 40] = item.id;
         }
       });
