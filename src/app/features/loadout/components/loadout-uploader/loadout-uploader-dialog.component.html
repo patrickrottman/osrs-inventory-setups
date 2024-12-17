@@ -4,9 +4,18 @@
       <mat-icon>upload_file</mat-icon>
       Upload Loadout
     </h2>
-    <button mat-icon-button mat-dialog-close>
-      <mat-icon>close</mat-icon>
-    </button>
+    <div class="header-actions">
+      <button 
+        mat-icon-button 
+        *ngIf="loadoutPreview"
+        (click)="copyToClipboard()"
+        matTooltip="Copy to clipboard">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+      <button mat-icon-button mat-dialog-close>
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
 
   <div class="content-wrapper" [class.has-preview]="loadoutPreview">
@@ -93,42 +102,59 @@
       </div>
       
       <div class="preview-content">
-        <div class="preview-grid">
-          <!-- Equipment Section -->
-          <div class="section">
-            <div class="section-title">
-              <mat-icon>accessibility</mat-icon>
-              Equipped Items
-            </div>
-            <app-equipment-slots
-              [equipment]="loadoutPreview.setup.eq"
-              [spellbookId]="loadoutPreview.setup.sb ?? 0">
-            </app-equipment-slots>
-          </div>
-
-          <!-- Inventory Section -->
-          <div class="section">
-            <div class="section-title">
-              <mat-icon>grid_view</mat-icon>
-              Storage Items
-            </div>
-            <div class="inventory-container">
-              <div class="inventory-wrapper">
-                <app-inventory-grid
-                  [items]="loadoutPreview.setup.inv"
-                  [layout]="loadoutPreview.layout ?? []">
-                </app-inventory-grid>
+        <!-- Show for inventory setup type -->
+        <ng-container *ngIf="loadoutPreview.type === 'inventory'">
+          <div class="preview-grid">
+            <!-- Equipment Section -->
+            <div class="section">
+              <div class="section-title">
+                <mat-icon>accessibility</mat-icon>
+                Equipped Items
               </div>
-              <app-rune-pouch
-                *ngIf="loadoutPreview.setup.rp?.length"
-                [runes]="loadoutPreview.setup.rp || []">
-              </app-rune-pouch>
+              <app-equipment-slots
+                [equipment]="loadoutPreview.setup.eq"
+                [spellbookId]="loadoutPreview.setup.sb ?? 0">
+              </app-equipment-slots>
+            </div>
+
+            <!-- Inventory Section -->
+            <div class="section">
+              <div class="section-title">
+                <mat-icon>grid_view</mat-icon>
+                Storage Items
+              </div>
+              <div class="inventory-container">
+                <div class="inventory-wrapper">
+                  <app-inventory-grid
+                    [items]="loadoutPreview.setup.inv"
+                    [layout]="loadoutPreview.layout ?? []">
+                  </app-inventory-grid>
+                </div>
+                <app-rune-pouch
+                  *ngIf="loadoutPreview.setup.rp?.length"
+                  [runes]="loadoutPreview.setup.rp || []">
+                </app-rune-pouch>
+              </div>
             </div>
           </div>
-        </div>
+        </ng-container>
 
-        <!-- Additional Items Section -->
-        <div class="section" *ngIf="hasAfiItems()">
+        <!-- Show for bank tag or bank tag layout type -->
+        <ng-container *ngIf="loadoutPreview.type === 'banktag' || loadoutPreview.type === 'banktaglayout'">
+          <div class="section">
+            <div class="section-title">
+              <mat-icon>grid_on</mat-icon>
+              {{ loadoutPreview.type === 'banktag' ? 'Bank Tag' : 'Bank Tag Layout' }}
+            </div>
+            <app-bank-tag-layout-grid
+              *ngIf="bankTagLayout"
+              [layout]="bankTagLayout">
+            </app-bank-tag-layout-grid>
+          </div>
+        </ng-container>
+
+        <!-- Additional Items Section - Only show for inventory type -->
+        <div class="section" *ngIf="hasAfiItems() && loadoutPreview.type === 'inventory'">
           <div class="section-title">
             <mat-icon>filter_list</mat-icon>
             Additional Items
@@ -155,13 +181,8 @@
 
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
-    <button 
-      mat-raised-button 
-      color="primary" 
-      [disabled]="!loadoutPreview"
-      (click)="onSubmit()">
-      <mat-icon>save</mat-icon>
-      Save Loadout
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!loadoutPreview">
+      Save
     </button>
   </mat-dialog-actions>
 </div> 

@@ -28,6 +28,8 @@ import { LoadoutUploaderDialogComponent } from '../loadout/components/loadout-up
 import { FirebaseDatePipe } from '../../shared/pipes/firebase-date.pipe';
 import { OsrsApiService } from '../../core/services/osrs-api.service';
 import { EquipmentSlotsComponent } from '../equipment/components/equipment-slots/equipment-slots.component';
+import { BankTagLayoutGridComponent } from '../inventory/components/bank-tag-layout-grid/bank-tag-layout-grid.component';
+import { BankTagLayout } from '../../shared/models/bank-tag-layout.model';
 
 @Component({
   selector: 'app-home',
@@ -53,7 +55,8 @@ import { EquipmentSlotsComponent } from '../equipment/components/equipment-slots
     MatProgressSpinnerModule,
     MatListModule,
     FirebaseDatePipe,
-    EquipmentSlotsComponent
+    EquipmentSlotsComponent,
+    BankTagLayoutGridComponent
   ],
   providers: [DatePipe]
 })
@@ -87,6 +90,13 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     { key: 'date', label: 'Date', icon: 'schedule' }
   ];
 
+  selectedType = new FormControl<'inventory' | 'banktag' | 'banktaglayout' | ''>('');
+
+  readonly loadoutTypes: { value: 'inventory' | 'banktag' | 'banktaglayout'; label: string }[] = [
+    { value: 'inventory', label: 'Inventory Setups' },
+    { value: 'banktaglayout', label: 'Bank Tag Layouts' }
+  ];
+
   constructor(
     private loadoutService: LoadoutService,
     private dialog: MatDialog,
@@ -98,6 +108,13 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     this.availableTags$ = this.loadoutService.getAllTags();
     this.isLoggedIn$ = this.firebaseService.isLoggedIn$;
     this.paginationState$ = this.loadoutService.getPaginationState();
+
+    // Subscribe to type changes
+    this.subscriptions.add(
+      this.selectedType.valueChanges.subscribe(() => {
+        this.updateFilters();
+      })
+    );
   }
 
   ngOnInit() {
@@ -182,7 +199,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   private updateFilters() {
     this.loadoutService.updateFilters({
       categories: this.selectedCategories.value ?? [],
-      tags: this.selectedTags.value ?? []
+      tags: this.selectedTags.value ?? [],
+      type: this.selectedType.value || undefined
     });
   }
 
@@ -191,6 +209,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       !!this.searchControl.value ||
       (this.selectedCategories.value?.length ?? 0) > 0 ||
       (this.selectedTags.value?.length ?? 0) > 0 ||
+      !!this.selectedType.value ||
       this.sortControl.value !== 'likes' ||
       this.sortDirectionControl.value !== 'desc'
     );
@@ -200,6 +219,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     this.searchControl.setValue('');
     this.selectedCategories.setValue([]);
     this.selectedTags.setValue([]);
+    this.selectedType.setValue('');
     this.sortControl.setValue('likes');
     this.sortDirectionControl.setValue('desc');
     this.loadoutService.resetFilters();
@@ -280,5 +300,38 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     if (event.key === 'Escape') {
       event.preventDefault();
     }
+  }
+
+  isLayoutType(loadout: LoadoutData): boolean {
+    return loadout.type === 'banktag' || loadout.type === 'banktaglayout';
+  }
+
+  getBankTagLayout(loadout: LoadoutData): BankTagLayout {
+    // Get all items sorted by position
+    const items = Object.entries(loadout.setup.afi || {})
+      .map(([pos, item]) => ({
+        id: item.id,
+        position: parseInt(pos),
+        q: item.q || 1
+      }))
+      .sort((a, b) => a.position - b.position);
+
+    // Calculate how many rows we currently have
+    const maxPosition = Math.max(...items.map(item => item.position));
+    const totalRows = Math.floor(maxPosition / 8) + 1;
+
+    // If we have more than 7 rows, only take items from first 7 rows
+    const maxAllowedPosition = 7 * 8 - 1; // 7 rows * 8 columns - 1 (0-based)
+    const limitedItems = totalRows > 7 
+      ? items.filter(item => item.position <= maxAllowedPosition)
+      : items;
+
+    return {
+      name: loadout.setup.name,
+      items: limitedItems,
+      bankTag: limitedItems.map(item => item.id),
+      width: 8,
+      originalFormat: loadout.originalFormat || ''
+    };
   }
 } 

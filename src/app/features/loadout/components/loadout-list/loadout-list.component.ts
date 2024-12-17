@@ -26,6 +26,8 @@ import { DeleteConfirmationComponent } from '../../../../shared/components/delet
 import { InventoryGridComponent } from '../../../inventory/components/inventory-grid/inventory-grid.component';
 import { LoadoutService } from '../../../../core/services/loadout.service';
 import { RunePouchComponent } from '../../../inventory/components/rune-pouch/rune-pouch.component';
+import { BankTagLayoutGridComponent } from '../../../inventory/components/bank-tag-layout-grid/bank-tag-layout-grid.component';
+import { BankTagLayout } from '../../../../shared/models/bank-tag-layout.model';
 
 @Component({
   selector: 'app-loadout-list',
@@ -48,7 +50,8 @@ import { RunePouchComponent } from '../../../inventory/components/rune-pouch/run
     ReactiveFormsModule,
     FirebaseDatePipe,
     InventoryGridComponent,
-    RunePouchComponent
+    RunePouchComponent,
+    BankTagLayoutGridComponent
   ]
 })
 export class LoadoutListComponent implements OnInit, OnDestroy {
@@ -217,5 +220,22 @@ export class LoadoutListComponent implements OnInit, OnDestroy {
 
   async hasUserLiked(loadoutId: string): Promise<boolean> {
     return this.loadoutService.hasUserLiked(loadoutId);
+  }
+
+  isLayoutType(loadout: LoadoutData): boolean {
+    return loadout.type === 'banktag' || loadout.type === 'banktaglayout';
+  }
+
+  getBankTagLayout(loadout: LoadoutData): BankTagLayout {
+    return {
+      name: loadout.setup.name,
+      items: Object.entries(loadout.setup.afi || {}).map(([pos, item]) => ({
+        id: item.id,
+        position: parseInt(pos),
+        q: item.q || 1
+      })),
+      bankTag: Object.values(loadout.setup.afi || {}).map(item => item.id),
+      width: 8
+    };
   }
 } 

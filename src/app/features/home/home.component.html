@@ -66,6 +66,21 @@
                (keydown)="handleFilterKeydown($event)"
                tabindex="0"
                role="menu">
+            <!-- Type Section -->
+            <div class="filter-section">
+              <h3>Type</h3>
+              <mat-form-field appearance="outline">
+                <mat-select [formControl]="selectedType" placeholder="All Types">
+                  <mat-option value="">All Types</mat-option>
+                  <mat-option *ngFor="let type of loadoutTypes" [value]="type.value">
+                    {{ type.label }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <mat-divider></mat-divider>
+
             <!-- Categories Section -->
             <div class="filter-section">
               <h3>Categories</h3>
@@ -185,6 +200,19 @@
       </div>
 
       <div class="filter-sections">
+        <!-- Type Section -->
+        <div class="filter-section">
+          <h3>Type</h3>
+          <mat-form-field appearance="outline">
+            <mat-select [formControl]="selectedType" placeholder="All Types">
+              <mat-option value="">All Types</mat-option>
+              <mat-option *ngFor="let type of loadoutTypes" [value]="type.value">
+                {{ type.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
         <div class="filter-section">
           <h3>Categories</h3>
           <mat-selection-list [formControl]="selectedCategories" class="filter-list">
@@ -217,25 +245,49 @@
 
   <!-- Loadouts Grid -->
   <div class="loadouts-grid">
-    <mat-card *ngFor="let loadout of loadouts$ | async" class="loadout-card" (click)="openLoadout(loadout)">
+    <mat-card *ngFor="let loadout of loadouts$ | async" 
+              class="loadout-card"
+              [class.bank-tag-card]="isLayoutType(loadout)"
+              (click)="openLoadout(loadout)">
       <mat-card-header>
         <div class="header-content">
           <div class="title">
             <h3>{{ loadout.setup.name }}</h3>
-            <mat-chip-set *ngIf="loadout.category !== 'Custom'">
-              <mat-chip color="primary" highlighted>{{ loadout.category }}</mat-chip>
-            </mat-chip-set>
           </div>
         </div>
       </mat-card-header>
 
       <mat-card-content>
+        <!-- Type and Category Banner -->
+        <div class="content-banner">
+          <div class="type-indicator" [class.bank-tag]="isLayoutType(loadout)">
+            <mat-icon>{{ isLayoutType(loadout) ? 'grid_on' : 'inventory_2' }}</mat-icon>
+            <span>{{ isLayoutType(loadout) ? 'Bank Tag Layout' : 'Inventory Setup' }}</span>
+          </div>
+          <div class="category-indicator" *ngIf="loadout.category !== 'Custom'">
+            <mat-icon>{{ 
+              loadout.category === 'Boss' ? 'security' : 
+              loadout.category === 'Skill' ? 'trending_up' : 
+              'category' 
+            }}</mat-icon>
+            <span>{{ loadout.category }}</span>
+          </div>
+        </div>
+
         <div class="preview-grid">
-          <app-equipment-slots
-            [equipment]="loadout.setup.eq"
-            [spellbookId]="loadout.setup.sb ?? 0"
-            [compact]="true">
-          </app-equipment-slots>
+          <ng-container *ngIf="!isLayoutType(loadout); else bankTagLayout">
+            <app-equipment-slots
+              [equipment]="loadout.setup.eq"
+              [spellbookId]="loadout.setup.sb ?? 0"
+              [compact]="true">
+            </app-equipment-slots>
+          </ng-container>
+          
+          <ng-template #bankTagLayout>
+            <app-bank-tag-layout-grid
+              [layout]="getBankTagLayout(loadout)">
+            </app-bank-tag-layout-grid>
+          </ng-template>
         </div>
       </mat-card-content>
 

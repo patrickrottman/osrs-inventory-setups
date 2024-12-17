@@ -12,19 +12,22 @@ import { LoadoutData, Setup } from '../../../../shared/models/inventory.model';
 import { InventoryGridComponent } from '../../../inventory/components/inventory-grid/inventory-grid.component';
 import { EquipmentSlotsComponent } from '../../../equipment/components/equipment-slots/equipment-slots.component';
 import { RunePouchComponent } from '../../../inventory/components/rune-pouch/rune-pouch.component';
+import { BankTagLayoutGridComponent } from '../../../inventory/components/bank-tag-layout-grid/bank-tag-layout-grid.component';
 import { OsrsApiService } from '../../../../core/services/osrs-api.service';
 import { FirebaseService } from '../../../../core/services/firebase.service';
 import { LoadoutService } from '../../../../core/services/loadout.service';
+import { BankTagLayoutService } from '../../../../shared/services/bank-tag-layout.service';
+import { BankTagLayout } from '../../../../shared/models/bank-tag-layout.model';
 import { Observable } from 'rxjs';
 import { FirebaseDatePipe } from '../../../../shared/pipes/firebase-date.pipe';
-import { DeleteConfirmationComponent } from './delete-confirmation.component';
+import { DeleteConfirmationComponent } from '../../../../shared/components/delete-confirmation/delete-confirmation.component';
 
-interface Spellbook {
-  name: string;
-  image: string;
+interface SpellbookMap {
+  [key: number]: {
+    name: string;
+    image: string;
+  };
 }
-
-type SpellbookMap = Record<number, Spellbook>;
 
 @Component({
   selector: 'app-loadout-modal',
@@ -44,6 +47,7 @@ type SpellbookMap = Record<number, Spellbook>;
     InventoryGridComponent,
     EquipmentSlotsComponent,
     RunePouchComponent,
+    BankTagLayoutGridComponent,
     FirebaseDatePipe
   ],
   providers: [DatePipe]
@@ -67,16 +71,32 @@ export class LoadoutModalComponent {
     private snackBar: MatSnackBar,
     private firebaseService: FirebaseService,
     private loadoutService: LoadoutService,
+    private bankTagLayoutService: BankTagLayoutService,
     private dialog: MatDialog
   ) {
-    console.log('Modal data:', {
-      loadoutId: data.id,
-      userId: data.userId,
-      name: data.setup.name
-    });
     this.isLoggedIn$ = this.firebaseService.isLoggedIn$;
     this.isOwner = this.firebaseService.isLoadoutOwner(this.data);
     this.checkLikeStatus();
+  }
+
+  get isLayoutType(): boolean {
+    return this.data.type === 'banktag' || this.data.type === 'banktaglayout';
+  }
+
+  get bankTagLayout(): BankTagLayout | null {
+    if (!this.data.setup.afi) return null;
+    
+    return {
+      name: this.data.setup.name,
+      items: Object.entries(this.data.setup.afi).map(([pos, item]) => ({
+        id: item.id,
+        position: parseInt(pos),
+        q: item.q || 1
+      })),
+      bankTag: Object.values(this.data.setup.afi).map(item => item.id),
+      width: 8,
+      originalFormat: this.data.originalFormat || ''
+    };
   }
 
   private async checkLikeStatus(): Promise<void> {
@@ -167,48 +187,63 @@ export class LoadoutModalComponent {
   }
 
   copyLoadout(): void {
-    // Create the setup object with all fields
-    const setup: Setup = {
-      inv: this.data.setup.inv,
-      eq: this.data.setup.eq,
-      name: this.data.setup.name,
-      hc: this.data.setup.hc,
-      hd: this.data.setup.hd,
-      fb: this.data.setup.fb,
-      uh: this.data.setup.uh,
-      sb: this.data.setup.sb
-    };
+    let exportText: string;
 
-    // Add optional fields if they exist
-    if (this.data.setup.notes) {
-      setup.notes = this.data.setup.notes;
+    if (this.isLayoutType && this.data.originalFormat) {
+      // Use original format if available
+      exportText = this.data.originalFormat;
+    } else if (this.isLayoutType) {
+      // Export as bank tag layout
+      const layout = this.bankTagLayout;
+      if (layout) {
+        exportText = this.bankTagLayoutService.exportLayout(layout);
+      } else {
+        throw new Error('Failed to generate bank tag layout');
+      }
+    } else {
+      // Export as inventory setup
+      const setup: Setup = {
+        inv: this.data.setup.inv,
+        eq: this.data.setup.eq,
+        name: this.data.setup.name,
+        hc: this.data.setup.hc,
+        hd: this.data.setup.hd,
+        fb: this.data.setup.fb,
+        uh: this.data.setup.uh,
+        sb: this.data.setup.sb
+      };
+
+      // Add optional fields if they exist
+      if (this.data.setup.notes) {
+        setup.notes = this.data.setup.notes;
+      }
+
+      if (this.data.setup.afi) {
+        setup.afi = this.data.setup.afi;
+      }
+
+      // Only add rp to setup if it exists and has items
+      if (this.data.setup.rp?.length) {
+        setup.rp = this.data.setup.rp;
+      }
+
+      const layout = this.calculateLayout(setup);
+
+      exportText = JSON.stringify({
+        setup,
+        layout
+      });
     }
 
-    if (this.data.setup.afi) {
-      setup.afi = this.data.setup.afi;
-    }
-
-    // Only add rp to setup if it exists and has items
-    if (this.data.setup.rp?.length) {
-      setup.rp = this.data.setup.rp;
-    }
-
-    const layout = this.calculateLayout(setup);
-
-    const essentialData = {
-      setup,
-      layout
-    };
-
-    navigator.clipboard.writeText(JSON.stringify(essentialData))
+    navigator.clipboard.writeText(exportText)
       .then(() => {
-        this.snackBar.open('Loadout copied to clipboard!', 'Close', {
+        this.snackBar.open('Copied to clipboard!', 'Close', {
           duration: 3000
         });
       })
       .catch(err => {
-        console.error('Error copying loadout:', err);
-        this.snackBar.open('Failed to copy loadout', 'Close', {
+        console.error('Failed to copy:', err);
+        this.snackBar.open('Failed to copy to clipboard', 'Close', {
           duration: 3000
         });
       });

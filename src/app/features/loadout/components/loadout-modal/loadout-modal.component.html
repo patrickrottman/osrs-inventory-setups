@@ -68,42 +68,59 @@
       </div>
       
       <div class="preview-content">
-        <div class="preview-grid">
-          <!-- Equipment Section -->
-          <div class="section">
-            <div class="section-title">
-              <mat-icon>accessibility</mat-icon>
-              Equipped Items
-            </div>
-            <app-equipment-slots
-              [equipment]="data.setup.eq"
-              [spellbookId]="data.setup.sb ?? 0">
-            </app-equipment-slots>
-          </div>
-
-          <!-- Inventory Section -->
-          <div class="section">
-            <div class="section-title">
-              <mat-icon>grid_view</mat-icon>
-              Storage Items
-            </div>
-            <div class="inventory-container">
-              <div class="inventory-wrapper">
-                <app-inventory-grid
-                  [items]="data.setup.inv"
-                  [layout]="data.layout ?? []">
-                </app-inventory-grid>
+        <!-- Show for inventory setup type -->
+        <ng-container *ngIf="!isLayoutType">
+          <div class="preview-grid">
+            <!-- Equipment Section -->
+            <div class="section">
+              <div class="section-title">
+                <mat-icon>accessibility</mat-icon>
+                Equipped Items
               </div>
-              <app-rune-pouch
-                *ngIf="data.setup.rp?.length"
-                [runes]="data.setup.rp || []">
-              </app-rune-pouch>
+              <app-equipment-slots
+                [equipment]="data.setup.eq"
+                [spellbookId]="data.setup.sb ?? 0">
+              </app-equipment-slots>
+            </div>
+
+            <!-- Inventory Section -->
+            <div class="section">
+              <div class="section-title">
+                <mat-icon>grid_view</mat-icon>
+                Storage Items
+              </div>
+              <div class="inventory-container">
+                <div class="inventory-wrapper">
+                  <app-inventory-grid
+                    [items]="data.setup.inv"
+                    [layout]="data.layout ?? []">
+                  </app-inventory-grid>
+                </div>
+                <app-rune-pouch
+                  *ngIf="data.setup.rp?.length"
+                  [runes]="data.setup.rp || []">
+                </app-rune-pouch>
+              </div>
             </div>
           </div>
-        </div>
+        </ng-container>
 
-        <!-- Additional Items Section -->
-        <div class="section" *ngIf="getFilteredItems()?.length">
+        <!-- Show for bank tag or bank tag layout type -->
+        <ng-container *ngIf="isLayoutType">
+          <div class="section">
+            <div class="section-title">
+              <mat-icon>grid_on</mat-icon>
+              {{ data.type === 'banktag' ? 'Bank Tag' : 'Bank Tag Layout' }}
+            </div>
+            <app-bank-tag-layout-grid
+              *ngIf="bankTagLayout"
+              [layout]="bankTagLayout">
+            </app-bank-tag-layout-grid>
+          </div>
+        </ng-container>
+
+        <!-- Additional Items Section - Only show for inventory type -->
+        <div class="section" *ngIf="getFilteredItems()?.length && !isLayoutType">
           <div class="section-title">
             <mat-icon>filter_list</mat-icon>
             Additional Items

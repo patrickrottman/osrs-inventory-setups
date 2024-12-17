@@ -9,7 +9,12 @@
         <!-- Head -->
         <div class="equipment-slot head" [class.has-item]="equipment[SLOTS.HEAD]">
           <div class="item" *ngIf="equipment[SLOTS.HEAD]">
-            <img [src]="getItemImageUrl(equipment[SLOTS.HEAD]!.id)" [alt]="'Item ' + equipment[SLOTS.HEAD]!.id">
+            <img [src]="getItemImageUrl(equipment[SLOTS.HEAD]!.id)" 
+                 [alt]="'Item ' + equipment[SLOTS.HEAD]!.id"
+                 loading="lazy"
+                 decoding="async"
+                 width="32"
+                 height="32">
             <div class="item-tooltip">{{ getItemName(equipment[SLOTS.HEAD]!.id) }}</div>
           </div>
         </div>
@@ -17,19 +22,34 @@
         <!-- Cape, Amulet, Ammo -->
         <div class="equipment-slot cape" [class.has-item]="equipment[SLOTS.CAPE]">
           <div class="item" *ngIf="equipment[SLOTS.CAPE]">
-            <img [src]="getItemImageUrl(equipment[SLOTS.CAPE]!.id)" [alt]="'Item ' + equipment[SLOTS.CAPE]!.id">
+            <img [src]="getItemImageUrl(equipment[SLOTS.CAPE]!.id)" 
+                 [alt]="'Item ' + equipment[SLOTS.CAPE]!.id"
+                 loading="lazy"
+                 decoding="async"
+                 width="32"
+                 height="32">
             <div class="item-tooltip">{{ getItemName(equipment[SLOTS.CAPE]!.id) }}</div>
           </div>
         </div>
         <div class="equipment-slot amulet" [class.has-item]="equipment[SLOTS.AMULET]">
           <div class="item" *ngIf="equipment[SLOTS.AMULET]">
-            <img [src]="getItemImageUrl(equipment[SLOTS.AMULET]!.id)" [alt]="'Item ' + equipment[SLOTS.AMULET]!.id">
+            <img [src]="getItemImageUrl(equipment[SLOTS.AMULET]!.id)" 
+                 [alt]="'Item ' + equipment[SLOTS.AMULET]!.id"
+                 loading="lazy"
+                 decoding="async"
+                 width="32"
+                 height="32">
             <div class="item-tooltip">{{ getItemName(equipment[SLOTS.AMULET]!.id) }}</div>
           </div>
         </div>
         <div class="equipment-slot ammo" [class.has-item]="equipment[SLOTS.AMMO]">
           <div class="item" *ngIf="equipment[SLOTS.AMMO]">
-            <img [src]="getItemImageUrl(equipment[SLOTS.AMMO]!.id)" [alt]="'Item ' + equipment[SLOTS.AMMO]!.id">
+            <img [src]="getItemImageUrl(equipment[SLOTS.AMMO]!.id)" 
+                 [alt]="'Item ' + equipment[SLOTS.AMMO]!.id"
+                 loading="lazy"
+                 decoding="async"
+                 width="32"
+                 height="32">
             <div class="item-tooltip">{{ getItemName(equipment[SLOTS.AMMO]!.id) }}</div>
           </div>
         </div>
@@ -37,19 +57,34 @@
         <!-- Weapon, Body, Shield -->
         <div class="equipment-slot weapon" [class.has-item]="equipment[SLOTS.WEAPON]">
           <div class="item" *ngIf="equipment[SLOTS.WEAPON]">
-            <img [src]="getItemImageUrl(equipment[SLOTS.WEAPON]!.id)" [alt]="'Item ' + equipment[SLOTS.WEAPON]!.id">
+            <img [src]="getItemImageUrl(equipment[SLOTS.WEAPON]!.id)" 
+                 [alt]="'Item ' + equipment[SLOTS.WEAPON]!.id"
+                 loading="lazy"
+                 decoding="async"
+                 width="32"
+                 height="32">
             <div class="item-tooltip">{{ getItemName(equipment[SLOTS.WEAPON]!.id) }}</div>
           </div>
         </div>
         <div class="equipment-slot body" [class.has-item]="equipment[SLOTS.BODY]">
           <div class="item" *ngIf="equipment[SLOTS.BODY]">
-            <img [src]="getItemImageUrl(equipment[SLOTS.BODY]!.id)" [alt]="'Item ' + equipment[SLOTS.BODY]!.id">
+            <img [src]="getItemImageUrl(equipment[SLOTS.BODY]!.id)" 
+                 [alt]="'Item ' + equipment[SLOTS.BODY]!.id"
+                 loading="lazy"
+                 decoding="async"
+                 width="32"
+                 height="32">
             <div class="item-tooltip">{{ getItemName(equipment[SLOTS.BODY]!.id) }}</div>
           </div>
         </div>
         <div class="equipment-slot shield" [class.has-item]="equipment[SLOTS.SHIELD]">
           <div class="item" *ngIf="equipment[SLOTS.SHIELD]">
-            <img [src]="getItemImageUrl(equipment[SLOTS.SHIELD]!.id)" [alt]="'Item ' + equipment[SLOTS.SHIELD]!.id">
+            <img [src]="getItemImageUrl(equipment[SLOTS.SHIELD]!.id)" 
+                 [alt]="'Item ' + equipment[SLOTS.SHIELD]!.id"
+                 loading="lazy"
+                 decoding="async"
+                 width="32"
+                 height="32">
             <div class="item-tooltip">{{ getItemName(equipment[SLOTS.SHIELD]!.id) }}</div>
           </div>
         </div>
@@ -57,7 +92,12 @@
         <!-- Legs -->
         <div class="equipment-slot legs" [class.has-item]="equipment[SLOTS.LEGS]">
           <div class="item" *ngIf="equipment[SLOTS.LEGS]">
-            <img [src]="getItemImageUrl(equipment[SLOTS.LEGS]!.id)" [alt]="'Item ' + equipment[SLOTS.LEGS]!.id">
+            <img [src]="getItemImageUrl(equipment[SLOTS.LEGS]!.id)" 
+                 [alt]="'Item ' + equipment[SLOTS.LEGS]!.id"
+                 loading="lazy"
+                 decoding="async"
+                 width="32"
+                 height="32">
             <div class="item-tooltip">{{ getItemName(equipment[SLOTS.LEGS]!.id) }}</div>
           </div>
         </div>
@@ -65,19 +105,34 @@
         <!-- Gloves, Boots, Ring -->
         <div class="equipment-slot gloves" [class.has-item]="equipment[SLOTS.GLOVES]">
           <div class="item" *ngIf="equipment[SLOTS.GLOVES]">
-            <img [src]="getItemImageUrl(equipment[SLOTS.GLOVES]!.id)" [alt]="'Item ' + equipment[SLOTS.GLOVES]!.id">
+            <img [src]="getItemImageUrl(equipment[SLOTS.GLOVES]!.id)" 
+                 [alt]="'Item ' + equipment[SLOTS.GLOVES]!.id"
+                 loading="lazy"
+                 decoding="async"
+                 width="32"
+                 height="32">
             <div class="item-tooltip">{{ getItemName(equipment[SLOTS.GLOVES]!.id) }}</div>
           </div>
         </div>
         <div class="equipment-slot boots" [class.has-item]="equipment[SLOTS.BOOTS]">
           <div class="item" *ngIf="equipment[SLOTS.BOOTS]">
-            <img [src]="getItemImageUrl(equipment[SLOTS.BOOTS]!.id)" [alt]="'Item ' + equipment[SLOTS.BOOTS]!.id">
+            <img [src]="getItemImageUrl(equipment[SLOTS.BOOTS]!.id)" 
+                 [alt]="'Item ' + equipment[SLOTS.BOOTS]!.id"
+                 loading="lazy"
+                 decoding="async"
+                 width="32"
+                 height="32">
             <div class="item-tooltip">{{ getItemName(equipment[SLOTS.BOOTS]!.id) }}</div>
           </div>
         </div>
         <div class="equipment-slot ring" [class.has-item]="equipment[SLOTS.RING]">
           <div class="item" *ngIf="equipment[SLOTS.RING]">
-            <img [src]="getItemImageUrl(equipment[SLOTS.RING]!.id)" [alt]="'Item ' + equipment[SLOTS.RING]!.id">
+            <img [src]="getItemImageUrl(equipment[SLOTS.RING]!.id)" 
+                 [alt]="'Item ' + equipment[SLOTS.RING]!.id"
+                 loading="lazy"
+                 decoding="async"
+                 width="32"
+                 height="32">
             <div class="item-tooltip">{{ getItemName(equipment[SLOTS.RING]!.id) }}</div>
           </div>
         </div>
@@ -93,7 +148,12 @@
     <div class="spellbook-container">
       <div class="equipment-slot spellbook">
         <div class="item">
-          <img [src]="getSpellbookImage()" [alt]="getSpellbookName(spellbookId)">
+          <img [src]="getSpellbookImage()" 
+               [alt]="getSpellbookName(spellbookId)"
+               loading="lazy"
+               decoding="async"
+               width="32"
+               height="32">
           <div class="item-tooltip">{{ getSpellbookName(spellbookId) }}</div>
         </div>
       </div>

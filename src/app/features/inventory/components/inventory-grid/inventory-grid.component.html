@@ -8,7 +8,11 @@
        [class.has-item]="getItemAtPosition(index)">
     <div class="item" *ngIf="getItemAtPosition(index) as item">
       <img [src]="getItemImageUrl(item.id)" 
-           [alt]="'Item ' + item.id">
+           [alt]="'Item ' + item.id"
+           loading="lazy"
+           decoding="async"
+           width="32"
+           height="32">
       <div class="item-tooltip">{{ getItemName(item.id) }}</div>
       <span class="quantity" *ngIf="item.q">{{ item.q | number }}</span>
     </div>

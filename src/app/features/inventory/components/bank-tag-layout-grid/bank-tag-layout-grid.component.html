@@ -1,0 +1,16 @@
+<div class="bank-tag-layout-grid" [style.grid-template-columns]="gridTemplateColumns">
+  <ng-container *ngFor="let row of rows">
+    <div *ngFor="let item of row" class="grid-cell">
+      <div *ngIf="item" class="item">
+        <img [src]="getItemImageUrl(item.id)" 
+             [alt]="getItemName(item.id)"
+             loading="lazy"
+             decoding="async"
+             width="32"
+             height="32">
+        <div class="item-tooltip">{{ getItemName(item.id) }}</div>
+        <span class="quantity" *ngIf="item.q > 1">{{ item.q | number }}</span>
+      </div>
+    </div>
+  </ng-container>
+</div> 

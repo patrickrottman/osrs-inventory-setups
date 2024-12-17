@@ -12,7 +12,6 @@
   z-index: 100;
   background: var(--mat-app-background-color);
   border-bottom: 1px solid var(--mat-divider-color);
-  margin: -1rem -1rem 0;
   padding: 1rem;
   transition: transform 0.3s ease;
 
@@ -79,7 +78,7 @@
         }
 
         .sort-direction {
-          margin: 0 -0.5rem;
+          margin-left: 1rem;
         }
       }
 
@@ -123,18 +122,35 @@
 
 .loadouts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1rem;
   margin-top: 1rem;
 
   .loadout-card {
+    position: relative;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    background: var(--mat-card-background-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &.bank-tag-card {
+      grid-column: span 2;
+
+      @media (max-width: 768px) {
+        grid-column: span 1;
+      }
+
+      .preview-grid {
+        min-height: 250px;
+        
+        app-bank-tag-layout-grid {
+          width: 100%;
+          max-width: 400px;
+        }
+      }
+    }
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: var(--mat-card-elevated-box-shadow);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     mat-card-header {
@@ -158,15 +174,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
           }
-
-          mat-chip-set {
-            flex-shrink: 0;
-            
-            mat-chip {
-              font-size: 0.8rem;
-              height: 24px;
-            }
-          }
         }
       }
     }
@@ -174,12 +181,57 @@
     mat-card-content {
       padding: 1rem;
 
+      .content-banner {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+
+        .type-indicator,
+        .category-indicator {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.25rem 0.75rem;
+          border-radius: 4px;
+          font-size: 0.9rem;
+          background: var(--mat-card-subtitle-text-color);
+          color: white;
+          opacity: 0.9;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+
+          &.bank-tag {
+            background: var(--mat-tag-accent-color);
+          }
+        }
+
+        .category-indicator {
+          background: var(--mat-primary-color);
+        }
+      }
+
       .preview-grid {
         display: flex;
         justify-content: center;
+        align-items: center;
         background: var(--mat-app-background-color);
         border-radius: 4px;
-        padding: 0.5rem;
+        padding: 1rem;
+        min-height: 200px;
+        overflow: hidden;
+
+        app-bank-tag-layout-grid {
+          transform: scale(0.95);
+          transform-origin: center;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        }
       }
     }
 
@@ -322,7 +374,6 @@
   }
 
   .top-bar {
-    margin: 0 -0.5rem 1rem -0.5rem;
     padding: 0.5rem;
 
     // When instructions are showing, adjust the top margin

@@ -31,6 +31,7 @@ export interface LoadoutFilters {
   sortDirection: 'asc' | 'desc';
   showPersonalOnly: boolean;
   isPublic?: boolean;
+  type?: 'inventory' | 'banktag' | 'banktaglayout';
 }
 
 export interface PaginationState {
@@ -104,7 +105,8 @@ export class LoadoutService {
       searchTerm: filters.search || undefined,
       tags: filters.tags.length > 0 ? filters.tags : undefined,
       showPersonalOnly: filters.showPersonalOnly,
-      isPublic: filters.isPublic
+      isPublic: filters.isPublic,
+      type: filters.type
     };
   }
 
@@ -188,6 +190,18 @@ export class LoadoutService {
           filtered = filtered.filter(loadout =>
             filters.tags.every(tag => loadout.tags?.includes(tag))
           );
+        }
+
+        if (filters.type) {
+          filtered = filtered.filter(loadout => {
+            if (filters.type === 'inventory') {
+              return !loadout.type || loadout.type === 'inventory';
+            }
+            if (filters.type === 'banktaglayout') {
+              return loadout.type === 'banktag' || loadout.type === 'banktaglayout';
+            }
+            return loadout.type === filters.type;
+          });
         }
 
         if (filters.showPersonalOnly && currentUser) {
