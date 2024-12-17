@@ -1,4 +1,10 @@
 <div class="home-container">
+
+  <!-- Alert Banner -->
+  <div class="alert-banner warning">
+    <mat-icon>warning</mat-icon>
+    <span><a href="https://runelite.net/plugin-hub/show/bank-tag-layouts" target="_blank">Bank Tag Layouts</a> support is currently in beta. Please report any issues importing/exporting on <a href="https://github.com/patrickrottman/osrs-inventory-setups/issues" target="_blank">GitHub</a>.</span>
+  </div>
   <!-- How-to Banner -->
   <div class="info-banner" *ngIf="showInstructions">
     <div class="banner-content">
@@ -29,12 +35,6 @@
     <button mat-icon-button class="close-button" (click)="hideInstructions()" matTooltip="Hide Instructions">
       <mat-icon>close</mat-icon>
     </button>
-  </div>
-
-  <!-- Alert Banner -->
-  <div class="alert-banner warning" style="display: none;">
-    <mat-icon>warning</mat-icon>
-    <span>Placeholder for future alert banner.</span>
   </div>
 
   <!-- Desktop Controls -->
