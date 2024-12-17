@@ -4,6 +4,26 @@
       <mat-icon>inventory_2</mat-icon>
       <span>{{ data.setup.name }}</span>
     </h2>
+    <div class="metadata-hover" *ngIf="data.tags?.length || data.category !== 'Custom' || isLayoutType">
+      <button class="info-button" mat-icon-button>
+        <mat-icon>info</mat-icon>
+      </button>
+      <div class="metadata-card">
+        <div class="type-indicator">
+          <mat-icon>{{ isLayoutType ? 'grid_on' : 'inventory_2' }}</mat-icon>
+          <span>{{ isLayoutType ? (data.type === 'banktag' ? 'Bank Tag' : 'Bank Tag Layout') : 'Inventory Setup' }}</span>
+        </div>
+        <div class="metadata-divider"></div>
+        <div class="category-tag" *ngIf="data.category !== 'Custom'">
+          <span class="category-label">{{ data.category }}</span>
+        </div>
+        <div class="tag-list" *ngIf="data.tags?.length">
+          <div class="tag" *ngFor="let tag of data.tags">
+            <span class="tag-label">{{ tag }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Desktop Actions -->
     <div class="header-actions desktop-actions">
       <button mat-icon-button 
@@ -58,15 +78,6 @@
 
   <div class="content-wrapper">
     <div class="preview-section">
-      <div class="preview-header">
-        <div class="preview-meta" *ngIf="data.tags?.length || data.category !== 'Custom'">
-          <mat-chip-set>
-            <mat-chip color="primary" highlighted>{{ data.category }}</mat-chip>
-            <mat-chip *ngFor="let tag of data.tags">{{ tag }}</mat-chip>
-          </mat-chip-set>
-        </div>
-      </div>
-      
       <div class="preview-content">
         <!-- Show for inventory setup type -->
         <ng-container *ngIf="!isLayoutType">

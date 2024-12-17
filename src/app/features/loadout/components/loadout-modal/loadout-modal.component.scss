@@ -156,6 +156,114 @@
       }
     }
 
+    .metadata-hover {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+
+      .info-button {
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+          opacity: 1;
+          & + .metadata-card {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+          }
+        }
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      .metadata-card {
+        position: absolute;
+        top: calc(100% - 8px);
+        right: 0;
+        background: var(--mat-dialog-container-background-color);
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--mat-divider-color);
+        box-shadow: var(--mat-dialog-container-elevation);
+        min-width: 200px;
+        opacity: 0;
+        transform: translateY(-4px);
+        pointer-events: none;
+        transition: all 0.2s ease;
+        z-index: 100;
+        
+        &:hover {
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: all;
+        }
+
+        .type-indicator {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: var(--mat-primary-color);
+          font-weight: 500;
+          font-size: 0.9rem;
+
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+        }
+
+        .metadata-divider {
+          height: 1px;
+          background: var(--mat-divider-color);
+          margin: 0.75rem 0;
+          opacity: 0.5;
+        }
+
+        .category-tag {
+          margin-bottom: 0.75rem;
+
+          .category-label {
+            background: var(--mat-primary-color);
+            color: var(--mat-primary-contrast-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: inline-block;
+          }
+        }
+
+        .tag-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+
+          .tag {
+            .tag-label {
+              background: var(--mat-dialog-container-background-color);
+              border: 1px solid var(--mat-divider-color);
+              color: var(--mat-dialog-container-text-color);
+              padding: 4px 8px;
+              border-radius: 4px;
+              font-size: 0.85rem;
+              display: inline-block;
+              opacity: 0.87;
+            }
+          }
+        }
+      }
+
+      @media (max-width: 768px) {
+        display: none;
+      }
+    }
+
     .header-actions {
       display: flex;
       gap: 0.5rem;
