@@ -4,7 +4,8 @@
       <mat-icon>inventory_2</mat-icon>
       <span>{{ data.setup.name }}</span>
     </h2>
-    <div class="metadata-hover" *ngIf="data.tags?.length || data.category !== 'Custom' || isLayoutType">
+    <!-- Desktop Metadata -->
+    <div class="metadata-hover desktop-only" *ngIf="data.tags?.length || data.category !== 'Custom' || isLayoutType">
       <button class="info-button" mat-icon-button>
         <mat-icon>info</mat-icon>
       </button>
@@ -77,6 +78,25 @@
   </div>
 
   <div class="content-wrapper">
+    <!-- Mobile Metadata Section -->
+    <div class="metadata-hover mobile-only" *ngIf="data.tags?.length || data.category !== 'Custom' || isLayoutType">
+      <div class="metadata-card">
+        <div class="type-indicator">
+          <mat-icon>{{ isLayoutType ? 'grid_on' : 'inventory_2' }}</mat-icon>
+          <span>{{ isLayoutType ? (data.type === 'banktag' ? 'Bank Tag' : 'Bank Tag Layout') : 'Inventory Setup' }}</span>
+        </div>
+        <div class="metadata-divider"></div>
+        <div class="category-tag" *ngIf="data.category !== 'Custom'">
+          <span class="category-label">{{ data.category }}</span>
+        </div>
+        <div class="tag-list" *ngIf="data.tags?.length">
+          <div class="tag" *ngFor="let tag of data.tags">
+            <span class="tag-label">{{ tag }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="preview-section">
       <div class="preview-content">
         <!-- Show for inventory setup type -->
