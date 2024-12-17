@@ -25,7 +25,7 @@ export class BankTagLayoutGridComponent implements OnInit {
   }
 
   get gridTemplateColumns(): string {
-    const minWidth = '32px';
+    const minWidth = '28px';
     const maxWidth = '48px';
     return `repeat(${this.layout.width}, minmax(${minWidth}, ${maxWidth}))`;
   }
