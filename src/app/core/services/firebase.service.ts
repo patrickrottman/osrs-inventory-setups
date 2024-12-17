@@ -57,6 +57,7 @@ export interface LoadoutQueryOptions {
   createdAfter?: Date;
   showPersonalOnly?: boolean;
   isPublic?: boolean;
+  type?: 'inventory' | 'banktag' | 'banktaglayout';
 }
 
 export interface LoadoutQueryResult {
@@ -364,6 +365,19 @@ export class FirebaseService {
       // Handle public/private filter
       if (typeof options.isPublic === 'boolean') {
         constraints.push(where('isPublic', '==', options.isPublic));
+      }
+
+      // Handle type filter
+      if (options.type) {
+        if (options.type === 'inventory') {
+          // For inventory type, include both null type and 'inventory' type
+          constraints.push(where('type', 'in', [null, 'inventory']));
+        } else if (options.type === 'banktaglayout') {
+          // For bank tag layouts, include both 'banktag' and 'banktaglayout' types
+          constraints.push(where('type', 'in', ['banktag', 'banktaglayout']));
+        } else {
+          constraints.push(where('type', '==', options.type));
+        }
       }
 
       // Handle created after filter

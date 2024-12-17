@@ -102,7 +102,7 @@ $base-item-size: clamp(46px, 4vw, 54px);
   margin: 0 auto;
   width: fit-content;
   
-  @media (max-width: 768px) {
+  @media (max-width: 1000px) {
     flex-direction: column;
     align-items: center;
     gap: 12px;

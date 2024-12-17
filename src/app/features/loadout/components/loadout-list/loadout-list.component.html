@@ -43,18 +43,28 @@
 
       <mat-card-content>
         <div class="loadout-preview">
-          <div class="inventory-container">
-            <div class="inventory-wrapper">
-              <app-inventory-grid
-                [items]="loadout.setup.inv"
-                [layout]="loadout.layout || []">
-              </app-inventory-grid>
+          <ng-container *ngIf="!isLayoutType(loadout)">
+            <div class="inventory-container">
+              <div class="inventory-wrapper">
+                <app-inventory-grid
+                  [items]="loadout.setup.inv"
+                  [layout]="loadout.layout || []">
+                </app-inventory-grid>
+              </div>
+              <app-rune-pouch
+                *ngIf="loadout.setup.rp?.length"
+                [runes]="loadout.setup.rp">
+              </app-rune-pouch>
             </div>
-            <app-rune-pouch
-              *ngIf="loadout.setup.rp?.length"
-              [runes]="loadout.setup.rp">
-            </app-rune-pouch>
-          </div>
+          </ng-container>
+
+          <ng-container *ngIf="isLayoutType(loadout)">
+            <div class="bank-tag-container">
+              <app-bank-tag-layout-grid
+                [layout]="getBankTagLayout(loadout)">
+              </app-bank-tag-layout-grid>
+            </div>
+          </ng-container>
         </div>
         <p *ngIf="loadout.setup.notes" class="notes">{{ loadout.setup.notes }}</p>
       </mat-card-content>

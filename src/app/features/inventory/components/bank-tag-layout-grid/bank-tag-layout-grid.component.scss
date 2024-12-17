@@ -1,0 +1,171 @@
+// Mixins
+@mixin runescape-text {
+  color: var(--inventory-text-color);
+  font-family: "RuneScape UF", "RuneScape", Arial, sans-serif;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+}
+
+@mixin item-slot {
+  position: relative;
+  background-color: var(--inventory-slot-color);
+  border: 1px solid var(--inventory-border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  transition: background-color 0.2s ease;
+  cursor: help;
+  aspect-ratio: 1;
+  width: 100%;
+  min-width: 28px;
+  min-height: 28px;
+
+  @media (max-width: 480px) {
+    padding: 1px;
+    min-width: 24px;
+    min-height: 24px;
+  }
+
+  &:hover {
+    background-color: var(--inventory-slot-hover-color);
+
+    .item-tooltip {
+      display: block;
+    }
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(0, 0, 0, 0.1) 100%
+    );
+    pointer-events: none;
+  }
+}
+
+@mixin item-base {
+  width: 100%;
+  height: 100%;
+  max-width: 32px;
+  max-height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+
+  @media (max-width: 480px) {
+    max-width: 24px;
+    max-height: 24px;
+  }
+}
+
+@mixin item-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--inventory-tooltip-bg);
+  color: var(--inventory-text-color);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1000;
+  margin-bottom: 4px;
+  border: 1px solid var(--inventory-border-color);
+  font-family: "RuneScape UF", "RuneScape", Arial, sans-serif;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--inventory-tooltip-bg);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 7px solid transparent;
+    border-top-color: var(--inventory-border-color);
+    margin-top: 1px;
+    z-index: -1;
+  }
+}
+
+// Component styles
+.bank-tag-layout-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--inventory-background-color);
+  padding: 8px;
+  border-radius: 4px;
+  border: 2px solid var(--inventory-border-color);
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.7);
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+
+  @media (max-width: 480px) {
+    padding: 2px;
+    gap: 0;
+    border-width: 1px;
+  }
+}
+
+.grid-cell {
+  @include item-slot;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-width: 32px;
+  max-height: 32px;
+
+  @media (max-width: 480px) {
+    max-width: 24px;
+    max-height: 24px;
+  }
+
+  img {
+    @include item-base;
+  }
+
+  .item-tooltip {
+    @include item-tooltip;
+  }
+}
+
+.quantity {
+  position: absolute;
+  right: 0;
+  bottom: -2px;
+  font-size: 12px;
+  color: #FFD700;
+  text-shadow: 1px 1px 1px black;
+  font-weight: bold;
+  font-family: "Runescape Chat Font", "Runescape Bold 12", Arial, sans-serif;
+
+  @media (max-width: 480px) {
+    font-size: 10px;
+    bottom: -1px;
+  }
+} 

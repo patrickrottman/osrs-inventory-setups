@@ -34,16 +34,18 @@ export interface LoadoutJson {
 export interface LoadoutData {
   id: string;
   userId: string;
+  setup: Setup;
+  layout?: number[];
   category: Category['type'];
-  setup: Setup;  // Use the Setup interface directly
   tags?: string[];
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
   likes?: number;
   views?: number;
   isPublic?: boolean;
-  layout?: number[];
-  version?: number;  // Add version field
+  version?: number;
+  type?: 'inventory' | 'banktag' | 'banktaglayout';
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  originalFormat?: string;  // Add originalFormat property
 }
 
 export interface Category {

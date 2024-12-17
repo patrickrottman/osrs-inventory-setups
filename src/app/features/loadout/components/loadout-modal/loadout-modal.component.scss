@@ -67,6 +67,19 @@
 :host {
   display: block;
 
+  .desktop-only {
+    @media (max-width: 768px) {
+      display: none !important;
+    }
+  }
+
+  .mobile-only {
+    display: none !important;
+    @media (max-width: 768px) {
+      display: block !important;
+    }
+  }
+
   ::ng-deep {
     .mat-mdc-dialog-container {
       --mdc-dialog-container-color: transparent;
@@ -156,6 +169,110 @@
       }
     }
 
+    .metadata-hover {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+
+      .info-button {
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+          opacity: 1;
+          & + .metadata-card {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+          }
+        }
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      .metadata-card {
+        position: absolute;
+        top: calc(100% - 8px);
+        right: 0;
+        background: var(--mat-dialog-container-background-color);
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--mat-divider-color);
+        box-shadow: var(--mat-dialog-container-elevation);
+        min-width: 200px;
+        opacity: 0;
+        transform: translateY(-4px);
+        pointer-events: none;
+        transition: all 0.2s ease;
+        z-index: 100;
+        
+        &:hover {
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: all;
+        }
+
+        .type-indicator {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: var(--mat-primary-color);
+          font-weight: 500;
+          font-size: 0.9rem;
+
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+        }
+
+        .metadata-divider {
+          height: 1px;
+          background: var(--mat-divider-color);
+          margin: 0.75rem 0;
+          opacity: 0.5;
+        }
+
+        .category-tag {
+          margin-bottom: 0.75rem;
+
+          .category-label {
+            background: var(--mat-primary-color);
+            color: var(--mat-primary-contrast-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: inline-block;
+          }
+        }
+
+        .tag-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+
+          .tag {
+            .tag-label {
+              background: var(--mat-dialog-container-background-color);
+              border: 1px solid var(--mat-divider-color);
+              color: var(--mat-dialog-container-text-color);
+              padding: 4px 8px;
+              border-radius: 4px;
+              font-size: 0.85rem;
+              display: inline-block;
+              opacity: 0.87;
+            }
+          }
+        }
+      }
+    }
+
     .header-actions {
       display: flex;
       gap: 0.5rem;
@@ -222,28 +339,85 @@
     flex: 1;
     overflow-y: auto;
 
-    .preview-section {
-      .preview-header {
-        margin-bottom: 1rem;
+    .metadata-hover.mobile-only {
+      .metadata-card {
+        position: static;
+        opacity: 1;
+        transform: none;
+        pointer-events: all;
+        padding: 0.75rem;
+        min-width: 0;
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        box-shadow: var(--mat-dialog-container-elevation);
+        border: 1px solid var(--mat-divider-color);
 
-        h3 {
-          margin: 0;
-          font-size: 20px;
-          color: var(--mat-dialog-container-text-color);
+        .type-indicator {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 0.5rem;
+          color: var(--mat-primary-color);
+          font-weight: 500;
+          font-size: 0.9rem;
 
           mat-icon {
-            opacity: 0.7;
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
           }
         }
 
-        .preview-meta {
-          margin-top: 0.5rem;
+        .metadata-divider {
+          height: 1px;
+          background: var(--mat-divider-color);
+          margin: 0.5rem 0;
+          opacity: 0.5;
+        }
+
+        .category-tag {
+          margin-bottom: 0.5rem;
+
+          .category-label {
+            background: var(--mat-primary-color);
+            color: var(--mat-primary-contrast-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: inline-block;
+          }
+        }
+
+        .tag-list {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          margin-bottom: 0;
+          display: flex;
+
+          .tag {
+            margin-right: 0.5rem;
+            margin-bottom: 0.25rem;
+            &:last-child {
+              margin-right: 0;
+            }
+
+            .tag-label {
+              background: var(--mat-dialog-container-background-color);
+              border: 1px solid var(--mat-divider-color);
+              color: var(--mat-dialog-container-text-color);
+              padding: 4px 8px;
+              border-radius: 4px;
+              font-size: 0.85rem;
+              display: inline-block;
+              opacity: 0.87;
+            }
+          }
         }
       }
+    }
 
+    .preview-section {
       .preview-content {
         display: flex;
         flex-direction: column;
@@ -318,6 +492,16 @@
       }
     }
   }
+
+  mat-dialog-actions {
+    padding: 1rem 1.5rem;
+    margin: 0;
+    background: var(--mat-dialog-container-background-color);
+    border-top: 1px solid var(--mat-divider-color);
+    justify-content: flex-end;
+    gap: 8px;
+    z-index: 1;
+  }
 }
 
 .filtered-items {
@@ -340,14 +524,4 @@
       @include item-tooltip;
     }
   }
-}
-
-mat-dialog-actions {
-  padding: 1rem 1.5rem;
-  margin: 0;
-  background: var(--mat-dialog-container-background-color);
-  border-top: 1px solid var(--mat-divider-color);
-  justify-content: flex-end;
-  gap: 8px;
-  z-index: 1;
 } 

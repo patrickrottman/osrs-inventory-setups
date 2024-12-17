@@ -31,6 +31,7 @@ export interface LoadoutFilters {
   sortDirection: 'asc' | 'desc';
   showPersonalOnly: boolean;
   isPublic?: boolean;
+  type?: 'inventory' | 'banktag' | 'banktaglayout';
 }
 
 export interface PaginationState {
@@ -104,7 +105,8 @@ export class LoadoutService {
       searchTerm: filters.search || undefined,
       tags: filters.tags.length > 0 ? filters.tags : undefined,
       showPersonalOnly: filters.showPersonalOnly,
-      isPublic: filters.isPublic
+      isPublic: filters.isPublic,
+      type: filters.type
     };
   }
 
@@ -119,9 +121,24 @@ export class LoadoutService {
         lastVisible
       });
 
-      // Append new loadouts to existing ones
-      this.loadoutStateService.updateLoadouts([...this.loadoutStateService.getCurrentLoadouts(), ...result.loadouts]);
-      this.updatePaginationState(result.lastVisible, result.hasMore);
+      // Get current loadouts and their IDs
+      const currentLoadouts = this.loadoutStateService.getCurrentLoadouts();
+      const currentIds = new Set(currentLoadouts.map(l => l.id));
+
+      // Filter out any duplicates from the new loadouts
+      const newLoadouts = result.loadouts.filter(loadout => !currentIds.has(loadout.id));
+
+      // Only append if we have new loadouts
+      if (newLoadouts.length > 0) {
+        this.loadoutStateService.updateLoadouts([...currentLoadouts, ...newLoadouts]);
+      }
+
+      // Update pagination state with the last document from the new results
+      this.updatePaginationState(
+        result.lastVisible,
+        // Only mark as having more if we got a full page of new (non-duplicate) loadouts
+        newLoadouts.length === this.pagination.value.pageSize
+      );
     } catch (error) {
       console.error('Error loading next page:', error);
     } finally {
@@ -188,6 +205,18 @@ export class LoadoutService {
           filtered = filtered.filter(loadout =>
             filters.tags.every(tag => loadout.tags?.includes(tag))
           );
+        }
+
+        if (filters.type) {
+          filtered = filtered.filter(loadout => {
+            if (filters.type === 'inventory') {
+              return !loadout.type || loadout.type === 'inventory';
+            }
+            if (filters.type === 'banktaglayout') {
+              return loadout.type === 'banktag' || loadout.type === 'banktaglayout';
+            }
+            return loadout.type === filters.type;
+          });
         }
 
         if (filters.showPersonalOnly && currentUser) {
@@ -300,14 +329,11 @@ export class LoadoutService {
       // Wait a short moment for Firestore to process the transaction
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Refresh the data in the background while keeping current loadouts
-      const result = await this.firebaseService.getLoadouts(this.createQueryOptions());
-      
-      // Only update if we got results back
-      if (result.loadouts.length > 0) {
-        this.loadoutStateService.updateLoadouts(result.loadouts);
-        this.updatePaginationState(result.lastVisible, result.hasMore);
-      }
+      // Update pagination state to reflect the new loadout
+      this.updatePaginationState(
+        this.pagination.value.lastVisible,
+        true
+      );
 
       return loadoutId;
     } catch (error) {
